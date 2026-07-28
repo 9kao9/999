@@ -1,0 +1,80 @@
+name: Test ScrapingAnt on 9 ExpHuay pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      render_javascript:
+        description: "เปิด JavaScript หรือไม่ (false ประหยัดเครดิตที่สุด)"
+        required: true
+        type: choice
+        default: "false"
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrapingant-trial
+  cancel-in-progress: true
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Test all 9 pages with ScrapingAnt
+        env:
+          SCRAPINGANT_API_KEY: ${{ secrets.SCRAPINGANT_API_KEY }}
+          SCRAPINGANT_BROWSER: ${{ inputs.render_javascript }}
+        run: python scrape_with_scrapingant.py
+
+      - name: Save test results to GitHub
+        if: always()
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          retries: 3
+          script: |
+            const fs = require("fs");
+            const path = "results.json";
+            const branch = context.ref.replace("refs/heads/", "");
+            const localContent = fs.readFileSync(path, "utf8");
+            const current = await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              ref: branch
+            });
+            const remoteContent = Buffer.from(
+              current.data.content,
+              "base64"
+            ).toString("utf8");
+            if (localContent === remoteContent) {
+              core.info("No data changes");
+              return;
+            }
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              branch,
+              message: "test: update results with ScrapingAnt",
+              content: Buffer.from(localContent).toString("base64"),
+              sha: current.data.sha
+            });
+            core.info("results.json updated successfully");
