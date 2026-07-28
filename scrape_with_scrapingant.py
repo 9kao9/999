@@ -198,6 +198,23 @@ def main() -> int:
         os.environ.get("SCRAPINGANT_BROWSER", "false").strip().lower()
         == "true"
     )
+    requested_keys = [
+        key.strip()
+        for key in os.environ.get("LOTTERY_KEYS", "").split(",")
+        if key.strip()
+    ]
+    unknown_keys = [key for key in requested_keys if key not in PAGES]
+    if unknown_keys:
+        print(
+            f"ไม่รู้จักประเภทรางวัล: {', '.join(unknown_keys)}",
+            file=sys.stderr,
+        )
+        return 2
+    selected_pages = (
+        {key: PAGES[key] for key in requested_keys}
+        if requested_keys
+        else PAGES
+    )
     print(
         "โหมดทดลอง: "
         + (
@@ -206,13 +223,14 @@ def main() -> int:
             else "ไม่เปิด JavaScript (ประมาณ 1 เครดิตต่อหน้า)"
         )
     )
+    print("รายการที่จะดึง: " + ", ".join(selected_pages))
 
     data = load_data()
     now = datetime.now(THAI_TZ)
     updated: list[str] = []
     errors: dict[str, str] = {}
 
-    for key, url in PAGES.items():
+    for key, url in selected_pages.items():
         try:
             html = fetch_html(api_key, url, render_javascript)
             soup = BeautifulSoup(html, "html.parser")
@@ -246,13 +264,14 @@ def main() -> int:
     data["_meta"] = {
         "provider": "scrapingant",
         "render_javascript": render_javascript,
+        "requested": list(selected_pages),
         "last_run": now.isoformat(timespec="seconds"),
         "updated": updated,
         "errors": errors,
     }
     save_data(data)
 
-    print(f"สรุป: สำเร็จ {len(updated)}/{len(PAGES)} หน้า")
+    print(f"สรุป: สำเร็จ {len(updated)}/{len(selected_pages)} หน้า")
     return 0 if updated else 1
 
 
