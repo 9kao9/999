@@ -10,7 +10,7 @@
     },
     {
       "date": "2026-07-27",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "950480",
       "top3": "480",
@@ -28,7 +28,7 @@
     },
     {
       "date": "2026-07-27",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "56176",
       "top3": "176",
@@ -46,7 +46,7 @@
     },
     {
       "date": "2026-07-27",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "65000",
       "top3": "000",
@@ -64,7 +64,7 @@
     },
     {
       "date": "2026-07-27",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "04506",
       "top3": "506",
@@ -74,7 +74,18 @@
   "_meta": {
     "provider": "scrapingant",
     "render_javascript": true,
-    "last_run": "2026-07-29T01:18:44+07:00",
+    "requested": [
+      "government",
+      "lao",
+      "hanoi_special",
+      "hanoi_normal",
+      "hanoi_vip",
+      "dow",
+      "nikkei_morning",
+      "nikkei_afternoon",
+      "thai_stock"
+    ],
+    "last_run": "2026-07-29T02:32:32+07:00",
     "updated": [
       "government",
       "lao",
@@ -99,7 +110,7 @@
     },
     {
       "date": "2026-07-15",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "639214",
       "top3": "214",
@@ -117,7 +128,7 @@
     },
     {
       "date": "2026-07-26",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "00883",
       "top3": "008",
@@ -135,7 +146,7 @@
     },
     {
       "date": "2026-07-27",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "64673",
       "top3": "646",
@@ -153,7 +164,7 @@
     },
     {
       "date": "2026-07-27",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "49227",
       "top3": "492",
@@ -171,7 +182,7 @@
     },
     {
       "date": "2026-07-27",
-      "time": "01:18",
+      "time": "02:32",
       "status": "out",
       "main": "04792",
       "top3": "047",
