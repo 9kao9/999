@@ -109,7 +109,7 @@
       {id:"hanoi_special",name:"ฮานอยพิเศษ",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:17,minute:30,color:"#8b5cff"},
       {id:"hanoi_normal",name:"ฮานอยปกติ",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:18,minute:30,color:"#5f7dff"},
       {id:"hanoi_vip",name:"ฮานอย VIP",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:19,minute:30,color:"#d23fd6"},
-      {id:"dow",name:"หุ้นดาวโจนส์",group:"stocks",icon:"🇺🇸",weekdays:[1,2,3,4,5],hour:3,minute:20,color:"#2ee0ad"},
+      {id:"dow",name:"หุ้นดาวโจนส์",group:"stocks",icon:"🇺🇸",weekdays:[2,3,4,5,6],hour:3,minute:20,color:"#2ee0ad"},
       {id:"nikkei_morning",name:"นิเคอิเช้า",group:"stocks",icon:"🇯🇵",weekdays:[1,2,3,4,5],hour:9,minute:30,color:"#2eb8ff"},
       {id:"nikkei_afternoon",name:"นิเคอิบ่าย",group:"stocks",icon:"🇯🇵",weekdays:[1,2,3,4,5],hour:13,minute:0,color:"#ff9f2e"},
       {id:"thai_stock",name:"หุ้นไทยเย็น",group:"stocks",icon:"🇹🇭",weekdays:[1,2,3,4,5],hour:16,minute:45,color:"#ad42ed"}
@@ -126,7 +126,8 @@
     function sortTypesByLatest(types){return [...types].sort((a,b)=>resultTimestamp(b,latest(b.id))-resultTimestamp(a,latest(a.id)))}
     function ageInDays(item){if(!item?.date)return Infinity;const p=bangkokParts();const today=Date.UTC(+p.year,+p.month-1,+p.day);const [y,m,d]=item.date.split("-").map(Number);return Math.floor((today-Date.UTC(y,m-1,d))/86400000)}
     function drawTimestamp(t,p){let y=+p.year,m=+p.month,d=+p.day;if(t.days&&!t.days.includes(d))return null;return Date.UTC(y,m-1,d,t.hour-7,t.minute)}
-    function stateFor(t,item){const p=bangkokParts();const today=`${p.year}-${pad(p.month)}-${pad(p.day)}`;let target=drawTimestamp(t,p);if(t.weekdays){const wd=new Date(Date.UTC(+p.year,+p.month-1,+p.day)).getUTCDay();if(!t.weekdays.includes(wd))target=null}const now=Date.now();if(item&&item.date===today)return{waiting:false,text:"ออกผลแล้ว"};if(target&&now>=target)return{waiting:true,text:"กำลังอัปเดตผล"};if(target&&target-now<=5*3600000)return{waiting:true,text:`รอออกผล ${countdown(target-now)}`,target};return item?{waiting:false,text:"ออกผลแล้ว"}:{waiting:true,text:"รอผล"}}
+    function expectedDrawDate(t,p){const base=Date.UTC(+p.year,+p.month-1,+p.day);const date=new Date(t.id==="dow"?base-86400000:base);return`${date.getUTCFullYear()}-${pad(date.getUTCMonth()+1)}-${pad(date.getUTCDate())}`}
+    function stateFor(t,item){const p=bangkokParts();const expectedDate=expectedDrawDate(t,p);let target=drawTimestamp(t,p);if(t.weekdays){const wd=new Date(Date.UTC(+p.year,+p.month-1,+p.day)).getUTCDay();if(!t.weekdays.includes(wd))target=null}const now=Date.now();if(item&&item.date===expectedDate)return{waiting:false,text:"ออกผลแล้ว"};if(target&&now>=target)return{waiting:true,text:"กำลังอัปเดตผล"};if(target&&target-now<=5*3600000)return{waiting:true,text:`รอออกผล ${countdown(target-now)}`,target};return item?{waiting:false,text:"ออกผลแล้ว"}:{waiting:true,text:"รอผล"}}
     function countdown(ms){const s=Math.max(0,Math.floor(ms/1000));return`${pad(Math.floor(s/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`}
     function statusHtml(state){return`<span class="status ${state.waiting?"wait":"out"}"${state.target?` data-countdown-target="${state.target}"`:""}><i class="status-dot"></i><span class="status-text">${esc(state.text)}</span></span>`}
     function updateCountdowns(){document.querySelectorAll("[data-countdown-target]").forEach(el=>{const target=Number(el.dataset.countdownTarget),remaining=target-Date.now(),text=el.querySelector(".status-text");if(!text)return;if(remaining<=0){text.textContent="กำลังอัปเดตผล";el.removeAttribute("data-countdown-target")}else{text.textContent=`รอออกผล ${countdown(remaining)}`}})}
