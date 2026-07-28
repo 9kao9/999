@@ -1,0 +1,116 @@
+name: Update lottery results with ScrapingAnt
+
+on:
+  workflow_dispatch:
+    inputs:
+      lottery_keys:
+        description: "ชื่อรายการ คั่นด้วย comma หรือเว้นว่างเพื่อดึงทั้ง 9 หน้า"
+        required: false
+        type: string
+        default: ""
+  schedule:
+    # GitHub ใช้เวลา UTC / ตัวเลขด้านขวาคือเวลาไทยโดยประมาณ
+    - cron: "40,55 21 * * 0-4"       # ดาวโจนส์ 04:40, 04:55 จ.-ศ.
+    - cron: "40,55 2 * * 1-5"        # นิเคอิเช้า 09:40, 09:55 จ.-ศ.
+    - cron: "10,25 6 * * 1-5"        # นิเคอิบ่าย 13:10, 13:25 จ.-ศ.
+    - cron: "10,25 9 1,16 * *"       # รัฐบาลไทย 16:10, 16:25 วันที่ 1/16
+    - cron: "55 9 * * 1-5"           # หุ้นไทยเย็น 16:55 จ.-ศ.
+    - cron: "10 10 * * 1-5"          # หุ้นไทยเย็นรอบตรวจซ้ำ 17:10
+    - cron: "40,55 10 * * *"         # ฮานอยพิเศษ 17:40, 17:55
+    - cron: "40,55 11 * * *"         # ฮานอยปกติ 18:40, 18:55
+    - cron: "40,55 12 * * *"         # ฮานอย VIP 19:40, 19:55
+    - cron: "40,55 13 * * 1-5"       # ลาวพัฒนา 20:40, 20:55 จ.-ศ.
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrapingant-results
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Choose only the lottery that is due
+        id: choose
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          MANUAL_KEYS: ${{ inputs.lottery_keys }}
+          CRON_VALUE: ${{ github.event.schedule }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "keys=$MANUAL_KEYS" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          case "$CRON_VALUE" in
+            "40,55 21 * * 0-4") echo "keys=dow" >> "$GITHUB_OUTPUT" ;;
+            "40,55 2 * * 1-5") echo "keys=nikkei_morning" >> "$GITHUB_OUTPUT" ;;
+            "10,25 6 * * 1-5") echo "keys=nikkei_afternoon" >> "$GITHUB_OUTPUT" ;;
+            "10,25 9 1,16 * *") echo "keys=government" >> "$GITHUB_OUTPUT" ;;
+            "55 9 * * 1-5"|"10 10 * * 1-5") echo "keys=thai_stock" >> "$GITHUB_OUTPUT" ;;
+            "40,55 10 * * *") echo "keys=hanoi_special" >> "$GITHUB_OUTPUT" ;;
+            "40,55 11 * * *") echo "keys=hanoi_normal" >> "$GITHUB_OUTPUT" ;;
+            "40,55 12 * * *") echo "keys=hanoi_vip" >> "$GITHUB_OUTPUT" ;;
+            "40,55 13 * * 1-5") echo "keys=lao" >> "$GITHUB_OUTPUT" ;;
+            *) echo "ไม่รู้จักตารางเวลา: $CRON_VALUE"; exit 1 ;;
+          esac
+
+      - name: Scrape selected result with JavaScript
+        env:
+          SCRAPINGANT_API_KEY: ${{ secrets.SCRAPINGANT_API_KEY }}
+          SCRAPINGANT_BROWSER: "true"
+          LOTTERY_KEYS: ${{ steps.choose.outputs.keys }}
+        run: python scrape_with_scrapingant.py
+
+      - name: Save results to GitHub
+        if: always()
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          retries: 3
+          script: |
+            const fs = require("fs");
+            const path = "results.json";
+            const branch = context.ref.replace("refs/heads/", "");
+            const localContent = fs.readFileSync(path, "utf8");
+            const current = await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              ref: branch
+            });
+            const remoteContent = Buffer.from(
+              current.data.content,
+              "base64"
+            ).toString("utf8");
+            if (localContent === remoteContent) {
+              core.info("No data changes");
+              return;
+            }
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              branch,
+              message: "chore: update selected lottery result",
+              content: Buffer.from(localContent).toString("base64"),
+              sha: current.data.sha
+            });
+            core.info("results.json updated successfully");
