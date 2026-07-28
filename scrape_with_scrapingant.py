@@ -154,6 +154,60 @@ def normalize_result(key: str, numbers: list[str]) -> tuple[str, str, str]:
     return main, top3, bottom2
 
 
+def correct_dow_draw_date(
+    draw_date: str,
+    now: datetime,
+) -> str:
+    """Correct ExpHuay's occasional one-day-stale DJI heading.
+
+    The Dow result shown early Tuesday-Friday Thailand time belongs to the
+    previous calendar day. Monday is intentionally excluded because the most
+    recent US trading result can still be from Friday.
+    """
+    if now.weekday() not in {1, 2, 3, 4}:
+        return draw_date
+
+    expected = (now.date() - timedelta(days=1)).isoformat()
+    if draw_date < expected:
+        print(
+            "[dow] แก้วันที่งวดจาก "
+            f"{draw_date} เป็น {expected} (เวลาประเทศไทย {now:%Y-%m-%d %H:%M})"
+        )
+        return expected
+    return draw_date
+
+
+def remove_recent_duplicate_result(
+    entries: list[dict],
+    draw_date: str,
+    main: str,
+    top3: str,
+    bottom2: str,
+) -> list[dict]:
+    """Remove a wrongly dated duplicate when the same DJI result is moved."""
+    current_date = datetime.fromisoformat(draw_date).date()
+    cleaned: list[dict] = []
+    for entry in entries:
+        try:
+            entry_date = datetime.fromisoformat(entry.get("date", "")).date()
+        except (TypeError, ValueError):
+            cleaned.append(entry)
+            continue
+        same_numbers = (
+            entry.get("main") == main
+            and entry.get("top3") == top3
+            and entry.get("bottom2") == bottom2
+        )
+        is_recent_older_copy = (
+            same_numbers
+            and entry_date < current_date
+            and (current_date - entry_date).days <= 3
+        )
+        if not is_recent_older_copy:
+            cleaned.append(entry)
+    return cleaned
+
+
 def upsert(
     entries: list[dict],
     draw_date: str,
@@ -244,6 +298,15 @@ def main() -> int:
                 )
             draw_date = extract_draw_date(soup, now)
             main_number, top3, bottom2 = normalize_result(key, numbers)
+            if key == "dow":
+                draw_date = correct_dow_draw_date(draw_date, now)
+                data[key] = remove_recent_duplicate_result(
+                    data[key],
+                    draw_date,
+                    main_number,
+                    top3,
+                    bottom2,
+                )
             data[key] = upsert(
                 data[key],
                 draw_date,
@@ -255,7 +318,7 @@ def main() -> int:
             updated.append(key)
             print(
                 f"[{key}] สำเร็จ: "
-                f"{main_number} / {top3} / {bottom2}"
+                f"{draw_date} / {main_number} / {top3} / {bottom2}"
             )
         except Exception as exc:
             errors[key] = str(exc)
