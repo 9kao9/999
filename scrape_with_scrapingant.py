@@ -160,11 +160,10 @@ def correct_dow_draw_date(
 ) -> str:
     """Correct ExpHuay's occasional one-day-stale DJI heading.
 
-    The Dow result shown early Tuesday-Friday Thailand time belongs to the
-    previous calendar day. Monday is intentionally excluded because the most
-    recent US trading result can still be from Friday.
+    The Dow result shown early Tuesday-Saturday Thailand time belongs to the
+    previous calendar day. Sunday and Monday are intentionally excluded.
     """
-    if now.weekday() not in {1, 2, 3, 4}:
+    if now.weekday() not in {1, 2, 3, 4, 5}:
         return draw_date
 
     expected = (now.date() - timedelta(days=1)).isoformat()
