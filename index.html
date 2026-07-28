@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070b25">
+  <title>ผลหวยวันนี้</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    :root{color-scheme:dark;--bg:#060a22;--bg2:#10113b;--panel:#101735;--soft:#151e43;--text:#f8f9ff;--muted:#9da8ca;--line:#2b3967;--pink:#f22ba2;--purple:#843bff;--cyan:#35d7ff;--green:#35d990;--gold:#ffc934;--orange:#ffb020;--shadow:0 20px 60px rgba(0,0,0,.28)}
+    :root[data-theme="light"]{color-scheme:light;--bg:#f3f5ff;--bg2:#ede8ff;--panel:#fff;--soft:#f2f5ff;--text:#111936;--muted:#657092;--line:#d7ddf1;--shadow:0 18px 45px rgba(37,46,100,.12)}
+    body{margin:0;min-height:100vh;background:radial-gradient(circle at 88% 7%,rgba(124,39,255,.28),transparent 31%),radial-gradient(circle at 3% 33%,rgba(26,78,173,.25),transparent 27%),linear-gradient(180deg,var(--bg),#05091d 60%,var(--bg));color:var(--text);font-family:"IBM Plex Sans Thai",sans-serif}
+    :root[data-theme="light"] body{background:radial-gradient(circle at 88% 7%,rgba(124,39,255,.12),transparent 31%),linear-gradient(180deg,var(--bg),#f8f9ff)}
+    button,select{font:inherit}.app{width:min(1320px,calc(100% - 32px));margin:auto;padding:34px 0 58px}
+    .masthead{text-align:center;position:relative}.masthead h1{font-size:clamp(38px,5vw,64px);line-height:1;margin:0;font-weight:700;letter-spacing:-.04em;text-shadow:0 5px 22px rgba(0,0,0,.25)}
+    .system-time{margin-top:16px;color:var(--muted);display:flex;gap:14px;align-items:center;justify-content:center;font-size:15px}
+    .theme-toggle{border:1px solid var(--line);background:var(--panel);color:var(--cyan);width:39px;height:39px;border-radius:50%;cursor:pointer;box-shadow:0 0 22px rgba(53,215,255,.23)}
+    .nav{position:sticky;top:10px;z-index:20;margin:26px auto 22px;padding:4px;max-width:1060px;display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(194,96,255,.6);border-radius:28px;background:rgba(13,19,52,.88);backdrop-filter:blur(18px);box-shadow:var(--shadow)}
+    :root[data-theme="light"] .nav{background:rgba(255,255,255,.88)}
+    .nav button{border:0;background:transparent;color:var(--text);padding:13px 8px;border-radius:24px;font-weight:600;cursor:pointer;white-space:nowrap}
+    .nav button.active{background:linear-gradient(100deg,var(--pink),var(--purple));box-shadow:0 0 22px rgba(242,43,162,.42)}
+    .view{display:none}.view.active{display:block}.section-title{display:flex;align-items:center;gap:10px;font-size:24px;margin:22px 0 12px}.section-title::before{content:"";width:4px;height:25px;border-radius:8px;background:linear-gradient(var(--pink),var(--purple))}
+    .featured{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}.hero-card{position:relative;overflow:hidden;min-height:250px;padding:22px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(22,31,70,.96),rgba(8,12,37,.96));box-shadow:var(--shadow)}
+    :root[data-theme="light"] .hero-card{background:linear-gradient(135deg,#fff,#f5f3ff)}
+    .hero-card.government{border-color:#997927;background:radial-gradient(circle at 86% 15%,rgba(255,202,52,.16),transparent 35%),linear-gradient(135deg,#28200c,#090d25)}
+    :root[data-theme="light"] .hero-card.government{background:radial-gradient(circle at 86% 15%,rgba(255,202,52,.2),transparent 35%),linear-gradient(135deg,#fffaf0,#fff)}
+    .hero-card.lao{border-color:#9e2d91;background:radial-gradient(circle at 88% 18%,rgba(226,35,151,.22),transparent 35%),linear-gradient(135deg,#35103e,#101035)}
+    :root[data-theme="light"] .hero-card.lao{background:radial-gradient(circle at 88% 18%,rgba(226,35,151,.12),transparent 35%),linear-gradient(135deg,#fff,#fff5fd)}
+    .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.identity{display:flex;gap:13px;align-items:center}.symbol{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;font-size:28px;background:var(--soft);border:1px solid var(--line)}
+    .hero-card h2{font-size:25px;margin:0}.date-line{color:var(--muted);font-size:13px;margin-top:3px}.status{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap;border:1px solid currentColor}.status.out{color:var(--green);background:rgba(53,217,144,.1)}.status.wait{color:var(--orange);background:rgba(255,176,32,.1)}.status-dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+    .result-main{text-align:center;margin:18px 0 12px}.result-label{color:var(--muted);font-size:13px}.big-number{font:700 clamp(42px,6vw,72px)/1 "IBM Plex Mono",monospace;letter-spacing:.08em;margin-top:4px}.government .big-number{color:var(--gold);text-shadow:0 5px 25px rgba(255,201,52,.22)}
+    .breakdown{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}.breakdown>div{text-align:center;padding:11px 8px;background:rgba(255,255,255,.025)}.breakdown>div+div{border-left:1px solid var(--line)}.breakdown strong{display:block;font:700 24px "IBM Plex Mono",monospace;margin-top:2px}.breakdown span{font-size:12px;color:var(--muted)}
+    .lottery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mini-card{border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,var(--panel),rgba(9,14,42,.92));padding:17px;box-shadow:var(--shadow)}
+    :root[data-theme="light"] .mini-card{background:var(--panel)}.mini-top{display:flex;justify-content:space-between;gap:8px}.mini-name{font-weight:700;font-size:18px}.mini-tag{color:var(--muted);font-size:11px;margin-top:2px}.mini-number{font:700 39px "IBM Plex Mono",monospace;letter-spacing:.08em;text-align:center;margin:17px 0;color:#fff}
+    :root[data-theme="light"] .mini-number{color:var(--text)}.mini-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.mini-breakdown div{background:var(--soft);border:1px solid var(--line);border-radius:9px;text-align:center;padding:7px 3px}.mini-breakdown span{display:block;color:var(--muted);font-size:10px}.mini-breakdown strong{font:700 16px "IBM Plex Mono",monospace}
+    .stock-panel{border-top:1px solid var(--line)}.stock-header,.stock-row{display:grid;grid-template-columns:2fr .75fr 1fr 1fr .8fr .8fr;gap:10px;align-items:center}.stock-header{color:var(--muted);font-size:12px;padding:0 17px 7px}.stock-row{position:relative;margin:7px 0;border:1px solid var(--line);border-radius:14px;background:linear-gradient(90deg,var(--panel),rgba(21,30,67,.82));padding:12px 17px;overflow:hidden}
+    :root[data-theme="light"] .stock-row{background:var(--panel)}.stock-row::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--accent)}.stock-name{display:flex;align-items:center;gap:11px;font-weight:700;font-size:18px}.flag{font-size:25px}.stock-time{color:var(--muted)}.stock-main{color:#48e2c0;font:700 29px "IBM Plex Mono",monospace;letter-spacing:.08em}.stock-value{font:700 20px "IBM Plex Mono",monospace}.countdown{color:var(--orange);font:600 13px "IBM Plex Mono",monospace}
+    .history-box{margin-top:24px;border:1px solid var(--line);border-radius:18px;background:rgba(13,20,51,.75);padding:18px;box-shadow:var(--shadow)}
+    :root[data-theme="light"] .history-box{background:var(--panel)}.history-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.history-head h2{font-size:24px;margin:0}.history-controls{display:flex;gap:8px}.history-controls select{border:1px solid var(--line);background:var(--soft);color:var(--text);border-radius:10px;padding:8px 10px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:660px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}th{font-size:12px;color:var(--muted);font-weight:500}td.number{font-family:"IBM Plex Mono",monospace;font-weight:700}
+    .empty{color:var(--muted);padding:28px;text-align:center}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}.loading{opacity:.45}.hide{display:none!important}
+    @media(max-width:900px){.app{width:min(100% - 22px,760px);padding-top:24px}.featured{grid-template-columns:1fr}.lottery-grid{grid-template-columns:repeat(2,1fr)}.stock-header{display:none}.stock-row{grid-template-columns:1.6fr .65fr 1fr .6fr .6fr}.stock-row .status{display:none}.hero-card{min-height:230px}}
+    @media(max-width:620px){.masthead h1{font-size:42px}.system-time{font-size:13px}.nav{top:6px;overflow:auto;display:flex;border-radius:18px}.nav button{min-width:102px;padding:11px}.featured{gap:10px}.hero-card{padding:16px;border-radius:18px}.hero-card h2{font-size:20px}.symbol{width:43px;height:43px;font-size:22px}.big-number{font-size:48px}.breakdown strong{font-size:19px}.lottery-grid{grid-template-columns:1fr}.stock-row{grid-template-columns:1.55fr .75fr .8fr;padding:11px 12px}.stock-time,.stock-row .status{display:none}.stock-name{font-size:15px}.stock-main{font-size:23px}.stock-value{font-size:17px}.stock-row>div:nth-last-child(1){display:none}.section-title{font-size:21px}.history-head{align-items:flex-start;flex-direction:column}.history-controls{width:100%}.history-controls select{flex:1;min-width:0}.card-head{align-items:flex-start}.status{padding:5px 8px;font-size:11px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="masthead">
+      <h1>ผลหวยวันนี้</h1>
+      <div class="system-time"><span id="today-label">กำลังโหลดวันที่…</span><span>│</span><span id="clock">--:--:-- น.</span><button class="theme-toggle" id="theme-toggle" aria-label="เปลี่ยนธีม">☾</button></div>
+    </header>
+
+    <nav class="nav" id="nav" aria-label="หมวดผลรางวัล">
+      <button class="active" data-view="latest">ล่าสุด</button>
+      <button data-view="government">รัฐบาล</button>
+      <button data-view="regional">ลาว–ฮานอย</button>
+      <button data-view="stocks">หวยหุ้น</button>
+      <button data-view="history">ประวัติ</button>
+    </nav>
+
+    <section class="view active" id="view-latest">
+      <div class="featured">
+        <div id="government-feature"></div>
+        <div id="lao-feature"></div>
+      </div>
+      <h2 class="section-title">ลาว–ฮานอยวันนี้</h2>
+      <div class="lottery-grid" id="regional-grid"></div>
+      <h2 class="section-title">หวยหุ้นวันนี้</h2>
+      <div id="stock-list"></div>
+    </section>
+
+    <section class="view" id="view-government">
+      <h2 class="section-title">หวยรัฐบาลไทย</h2>
+      <div id="government-full"></div>
+      <div class="history-box" id="government-history"></div>
+    </section>
+
+    <section class="view" id="view-regional">
+      <h2 class="section-title">ผลหวยลาว–ฮานอย</h2>
+      <div class="lottery-grid" id="regional-full"></div>
+      <div class="history-box" id="regional-history"></div>
+    </section>
+
+    <section class="view" id="view-stocks">
+      <h2 class="section-title">ผลหวยหุ้น</h2>
+      <div id="stock-full"></div>
+      <div class="history-box" id="stock-history"></div>
+    </section>
+
+    <section class="view" id="view-history">
+      <div class="history-box" id="all-history"></div>
+    </section>
+
+    <p class="footer">ข้อมูลผลรางวัลใช้เพื่อการตรวจสอบเท่านั้น โปรดตรวจสอบกับแหล่งประกาศอย่างเป็นทางการอีกครั้ง</p>
+  </main>
+
+  <script>
+    const githubPagesOwner=location.hostname.endsWith(".github.io")?location.hostname.split(".")[0]:"";
+    const githubPagesRepo=location.hostname.endsWith(".github.io")?location.pathname.split("/").filter(Boolean)[0]:"";
+    const DATA_URL=githubPagesOwner&&githubPagesRepo
+      ?`https://raw.githubusercontent.com/${githubPagesOwner}/${githubPagesRepo}/main/results.json`
+      :"./results.json";
+    const TYPES=[
+      {id:"government",name:"หวยรัฐบาลไทย",group:"government",icon:"🇹🇭",days:[1,16],hour:16,minute:0,color:"#ffc934"},
+      {id:"lao",name:"หวยลาวพัฒนา",group:"regional",icon:"🇱🇦",weekdays:[1,2,3,4,5],hour:20,minute:30,color:"#ec31af",six:true,top2:true},
+      {id:"hanoi_special",name:"ฮานอยพิเศษ",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:17,minute:30,color:"#8b5cff"},
+      {id:"hanoi_normal",name:"ฮานอยปกติ",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:18,minute:30,color:"#5f7dff"},
+      {id:"hanoi_vip",name:"ฮานอย VIP",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:19,minute:30,color:"#d23fd6"},
+      {id:"dow",name:"หุ้นดาวโจนส์",group:"stocks",icon:"🇺🇸",weekdays:[1,2,3,4,5],hour:4,minute:30,color:"#2ee0ad"},
+      {id:"nikkei_morning",name:"นิเคอิเช้า",group:"stocks",icon:"🇯🇵",weekdays:[1,2,3,4,5],hour:9,minute:30,color:"#2eb8ff"},
+      {id:"nikkei_afternoon",name:"นิเคอิบ่าย",group:"stocks",icon:"🇯🇵",weekdays:[1,2,3,4,5],hour:13,minute:0,color:"#ff9f2e"},
+      {id:"thai_stock",name:"หุ้นไทยเย็น",group:"stocks",icon:"🇹🇭",weekdays:[1,2,3,4,5],hour:16,minute:45,color:"#ad42ed"}
+    ];
+    let DATA={};let historyType="government";let historyMonth="all";
+    const $=s=>document.querySelector(s);
+    const pad=n=>String(n).padStart(2,"0");
+    const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    function bangkokParts(date=new Date()){return Object.fromEntries(new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Bangkok",year:"numeric",month:"numeric",day:"numeric",weekday:"short",hour:"numeric",minute:"numeric",second:"numeric",hourCycle:"h23"}).formatToParts(date).filter(x=>x.type!=="literal").map(x=>[x.type,x.value]))}
+    function thaiDate(iso,long=false){if(!iso)return"ยังไม่มีข้อมูล";const [y,m,d]=iso.split("-").map(Number);return new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:long?"long":"short",day:"numeric",month:long?"long":"numeric",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)))}
+    function latest(id){return [...(DATA[id]||[])].sort((a,b)=>(b.date+(b.time||"")).localeCompare(a.date+(a.time||"")))[0]}
+    function drawTimestamp(t,p){let y=+p.year,m=+p.month,d=+p.day;if(t.days&&!t.days.includes(d))return null;return Date.UTC(y,m-1,d,t.hour-7,t.minute)}
+    function stateFor(t,item){const p=bangkokParts();const today=`${p.year}-${pad(p.month)}-${pad(p.day)}`;let target=drawTimestamp(t,p);if(t.weekdays){const wd=new Date(Date.UTC(+p.year,+p.month-1,+p.day)).getUTCDay();if(!t.weekdays.includes(wd))target=null}const now=Date.now();if(item&&item.date===today)return{waiting:false,text:"ออกผลแล้ว"};if(target&&now>=target)return{waiting:true,text:"กำลังอัปเดตผล"};if(target&&target-now<=5*3600000)return{waiting:true,text:`รอออกผล ${countdown(target-now)}`};return item?{waiting:false,text:"ออกผลแล้ว"}:{waiting:true,text:"รอผล"}}
+    function countdown(ms){const s=Math.max(0,Math.floor(ms/1000));return`${pad(Math.floor(s/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`}
+    function statusHtml(state){return`<span class="status ${state.waiting?"wait":"out"}"><i class="status-dot"></i>${esc(state.text)}</span>`}
+    function hero(t,item,kind=t.id){const s=stateFor(t,item),main=s.waiting&&!item?"------":(item?.main||"------"),top3=item?.top3||"---",bottom=item?.bottom2||"--",top2=main.slice(-2);return`<article class="hero-card ${kind}"><div class="card-head"><div class="identity"><div class="symbol">${t.icon}</div><div><h2>${esc(t.name)}</h2><div class="date-line">งวดวันที่ ${thaiDate(item?.date||"",true)}</div></div></div>${statusHtml(s)}</div><div class="result-main"><div class="result-label">${t.id==="government"?"รางวัลที่ 1":"ผลรางวัล"}</div><div class="big-number">${esc(main)}</div></div><div class="breakdown"><div><span>${t.id==="government"?"เลขท้าย 3 ตัว":"3 ตัวบน"}</span><strong>${esc(top3)}</strong></div>${t.top2?`<div><span>2 ตัวบน</span><strong>${esc(top2)}</strong></div>`:""}<div><span>2 ตัวล่าง</span><strong>${esc(bottom)}</strong></div></div></article>`}
+    function mini(t,item){const s=stateFor(t,item),main=item?.main||"-----";return`<article class="mini-card" style="border-top:3px solid ${t.color}"><div class="mini-top"><div><div class="mini-name">${t.icon} ${esc(t.name)}</div><div class="mini-tag">${thaiDate(item?.date||"")} · ${pad(t.hour)}:${pad(t.minute)} น.</div></div>${statusHtml(s)}</div><div class="mini-number">${esc(main)}</div><div class="mini-breakdown"><div><span>3 ตัวบน</span><strong>${esc(item?.top3||"---")}</strong></div>${t.top2?`<div><span>2 ตัวบน</span><strong>${esc(main.slice(-2)||"--")}</strong></div>`:""}<div><span>2 ตัวล่าง</span><strong>${esc(item?.bottom2||"--")}</strong></div></div></article>`}
+    function stocksMarkup(){return`<div class="stock-panel"><div class="stock-header"><span>ประเภท</span><span>เวลาออก</span><span>สถานะ</span><span>รางวัล 5 ตัว</span><span>3 ตัวบน</span><span>2 ตัวล่าง</span></div>${TYPES.filter(t=>t.group==="stocks").map(t=>{const i=latest(t.id),s=stateFor(t,i);return`<div class="stock-row" style="--accent:${t.color}"><div class="stock-name"><span class="flag">${t.icon}</span>${esc(t.name)}</div><div class="stock-time">${pad(t.hour)}:${pad(t.minute)} น.</div><div>${statusHtml(s)}</div><div class="stock-main">${esc(i?.main||"-----")}</div><div class="stock-value">${esc(i?.top3||"---")}</div><div class="stock-value">${esc(i?.bottom2||"--")}</div></div>`}).join("")}</div>`}
+    function monthLabel(month){return new Intl.DateTimeFormat("th-TH",{month:"long",year:"numeric"}).format(new Date(`${month}-01T12:00:00+07:00`))}
+    function historyMarkup(title,allowedIds=TYPES.map(t=>t.id)){const chosen=allowedIds.includes(historyType)?historyType:allowedIds[0];historyType=chosen;const t=TYPES.find(x=>x.id===chosen),list=[...(DATA[chosen]||[])].sort((a,b)=>b.date.localeCompare(a.date)),months=[...new Set(list.map(x=>x.date.slice(0,7)))];if(historyMonth!=="all"&&!months.includes(historyMonth))historyMonth="all";const rows=(historyMonth==="all"?list:list.filter(x=>x.date.startsWith(historyMonth))).map(x=>`<tr><td>${thaiDate(x.date)}</td><td class="number">${esc(x.main)}</td><td class="number">${esc(x.top3)}</td>${t.top2?`<td class="number">${esc(String(x.main).slice(-2))}</td>`:""}<td class="number">${esc(x.bottom2)}</td><td>ออกผลแล้ว</td></tr>`).join("");return`<div class="history-head"><h2>${esc(title)}</h2><div class="history-controls"><select id="history-type">${allowedIds.map(id=>{const x=TYPES.find(t=>t.id===id);return`<option value="${id}" ${id===chosen?"selected":""}>${esc(x.name)}</option>`}).join("")}</select><select id="history-month"><option value="all">ทุกเดือน</option>${months.map(m=>`<option value="${m}" ${m===historyMonth?"selected":""}>${monthLabel(m)}</option>`).join("")}</select></div></div>${rows?`<div class="table-wrap"><table><thead><tr><th>วันที่</th><th>เลขหลัก</th><th>3 ตัวบน</th>${t.top2?"<th>2 ตัวบน</th>":""}<th>2 ตัวล่าง</th><th>สถานะ</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty">ยังไม่มีประวัติผลรางวัลประเภทนี้</div>`}`}
+    function bindHistory(container,allowed,title){container.querySelector("#history-type")?.addEventListener("change",e=>{historyType=e.target.value;historyMonth="all";container.innerHTML=historyMarkup(title,allowed);bindHistory(container,allowed,title)});container.querySelector("#history-month")?.addEventListener("change",e=>{historyMonth=e.target.value;container.innerHTML=historyMarkup(title,allowed);bindHistory(container,allowed,title)})}
+    function render(){const government=TYPES[0],lao=TYPES[1],regional=TYPES.filter(t=>t.group==="regional"),stocks=TYPES.filter(t=>t.group==="stocks");$("#government-feature").innerHTML=hero(government,latest("government"),"government");$("#lao-feature").innerHTML=hero(lao,latest("lao"),"lao");$("#regional-grid").innerHTML=regional.filter(t=>t.id!=="lao").map(t=>mini(t,latest(t.id))).join("");$("#stock-list").innerHTML=stocksMarkup();$("#government-full").innerHTML=hero(government,latest("government"),"government");$("#regional-full").innerHTML=regional.map(t=>mini(t,latest(t.id))).join("");$("#stock-full").innerHTML=stocksMarkup();const groups=[["#government-history",["government"],"ประวัติหวยรัฐบาลไทย"],["#regional-history",regional.map(t=>t.id),"ประวัติลาว–ฮานอย"],["#stock-history",stocks.map(t=>t.id),"ประวัติหวยหุ้น"],["#all-history",TYPES.map(t=>t.id),"ประวัติผลรางวัลรายเดือน"]];groups.forEach(([sel,ids,title])=>{const el=$(sel);el.innerHTML=historyMarkup(title,ids);bindHistory(el,ids,title)})}
+    async function load(){try{const r=await fetch(`${DATA_URL}?_=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw Error(r.status);DATA=await r.json();render()}catch(e){document.querySelectorAll(".view").forEach(v=>v.classList.add("loading"));$("#view-latest").insertAdjacentHTML("afterbegin",`<div class="empty">โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>`)}}
+    function updateClock(){const p=bangkokParts();const y=+p.year,m=+p.month,d=+p.day;$("#today-label").textContent=new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",day:"numeric",month:"long",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)));$("#clock").textContent=`${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)} น.`}
+    $("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${b.dataset.view}`));window.scrollTo({top:0,behavior:"smooth"})});
+    function applyTheme(theme){document.documentElement.dataset.theme=theme;$("#theme-toggle").textContent=theme==="light"?"☀":"☾"}const saved=localStorage.getItem("lottery-theme")||"dark";applyTheme(saved);$("#theme-toggle").addEventListener("click",()=>{const n=document.documentElement.dataset.theme==="dark"?"light":"dark";localStorage.setItem("lottery-theme",n);applyTheme(n)});
+    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);setInterval(()=>{if(Object.keys(DATA).length)render()},1000);
+  </script>
+</body>
+</html>

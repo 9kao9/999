@@ -1,0 +1,139 @@
+{
+  "lao": [
+    {
+      "date": "2026-07-28",
+      "time": "21:50",
+      "status": "out",
+      "main": "950480",
+      "top3": "480",
+      "bottom2": "04"
+    },
+    {
+      "date": "2026-07-27",
+      "time": "20:42",
+      "status": "out",
+      "main": "804970",
+      "top3": "970",
+      "bottom2": "49"
+    }
+  ],
+  "hanoi_special": [
+    {
+      "date": "2026-07-28",
+      "time": "21:50",
+      "status": "out",
+      "main": "56176",
+      "top3": "176",
+      "bottom2": "66"
+    },
+    {
+      "date": "2026-07-27",
+      "time": "02:19",
+      "status": "out",
+      "main": "52035",
+      "top3": "035",
+      "bottom2": "70"
+    }
+  ],
+  "hanoi_normal": [
+    {
+      "date": "2026-07-28",
+      "time": "21:50",
+      "status": "out",
+      "main": "65000",
+      "top3": "000",
+      "bottom2": "77"
+    },
+    {
+      "date": "2026-07-27",
+      "time": "02:19",
+      "status": "out",
+      "main": "54796",
+      "top3": "796",
+      "bottom2": "90"
+    }
+  ],
+  "hanoi_vip": [
+    {
+      "date": "2026-07-28",
+      "time": "21:50",
+      "status": "out",
+      "main": "04506",
+      "top3": "506",
+      "bottom2": "31"
+    },
+    {
+      "date": "2026-07-27",
+      "time": "02:19",
+      "status": "out",
+      "main": "36511",
+      "top3": "511",
+      "bottom2": "25"
+    }
+  ],
+  "_meta": {
+    "last_run": "2026-07-28T21:50:44+07:00",
+    "updated": [
+      "government",
+      "lao",
+      "hanoi_special",
+      "hanoi_normal",
+      "hanoi_vip",
+      "dow",
+      "nikkei_morning",
+      "nikkei_afternoon",
+      "thai_stock"
+    ],
+    "errors": {}
+  },
+  "government": [
+    {
+      "date": "2026-07-16",
+      "time": "21:50",
+      "status": "out",
+      "main": "639214",
+      "top3": "214",
+      "bottom2": "71"
+    }
+  ],
+  "dow": [
+    {
+      "date": "2026-07-27",
+      "time": "21:50",
+      "status": "out",
+      "main": "00883",
+      "top3": "008",
+      "bottom2": "83"
+    }
+  ],
+  "nikkei_morning": [
+    {
+      "date": "2026-07-28",
+      "time": "21:50",
+      "status": "out",
+      "main": "64673",
+      "top3": "646",
+      "bottom2": "73"
+    }
+  ],
+  "nikkei_afternoon": [
+    {
+      "date": "2026-07-28",
+      "time": "21:50",
+      "status": "out",
+      "main": "49227",
+      "top3": "492",
+      "bottom2": "27"
+    }
+  ],
+  "thai_stock": [
+    {
+      "date": "2026-07-28",
+      "time": "21:50",
+      "status": "out",
+      "main": "04792",
+      "top3": "047",
+      "bottom2": "92"
+    }
+  ]
+}
