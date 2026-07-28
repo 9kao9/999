@@ -75,27 +75,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "government",
-      "lao",
-      "hanoi_special",
-      "hanoi_normal",
-      "hanoi_vip",
-      "dow",
-      "nikkei_morning",
-      "nikkei_afternoon",
-      "thai_stock"
+      "dow"
     ],
-    "last_run": "2026-07-29T02:32:32+07:00",
+    "last_run": "2026-07-29T04:50:19+07:00",
     "updated": [
-      "government",
-      "lao",
-      "hanoi_special",
-      "hanoi_normal",
-      "hanoi_vip",
-      "dow",
-      "nikkei_morning",
-      "nikkei_afternoon",
-      "thai_stock"
+      "dow"
     ],
     "errors": {}
   },
@@ -120,11 +104,11 @@
   "dow": [
     {
       "date": "2026-07-27",
-      "time": "21:50",
+      "time": "04:50",
       "status": "out",
-      "main": "00883",
-      "top3": "008",
-      "bottom2": "83"
+      "main": "73224",
+      "top3": "732",
+      "bottom2": "24"
     },
     {
       "date": "2026-07-26",
