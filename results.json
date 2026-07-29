@@ -75,13 +75,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "dow"
+      "nikkei_morning"
     ],
-    "last_run": "2026-07-29T05:13:35+07:00",
-    "updated": [
-      "dow"
-    ],
-    "errors": {}
+    "last_run": "2026-07-29T12:39:33+07:00",
+    "updated": [],
+    "errors": {
+      "nikkei_morning": "ไม่พบชุดผลรางวัล (title='Just a moment...')"
+    }
   },
   "government": [
     {
