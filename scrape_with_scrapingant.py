@@ -1,21 +1,20 @@
-"""ดึงผลหวยจาก ExpHuay แล้วบันทึกลง results.json
+"""ทดลองดึงผลหวย 9 หน้าผ่าน ScrapingAnt โดยไม่ต้องเปิดคอมพิวเตอร์
 
-สคริปต์นี้ออกแบบให้รันบน GitHub Actions:
-- ใช้เวลาไทย (Asia/Bangkok) เสมอ
-- ลอง selector หลายแบบ เผื่อหน้าเว็บเปลี่ยน class
-- ไม่ลบข้อมูลเก่าเมื่อหน้าเว็บต้นทางมีปัญหา
-- บันทึกสถานะการทำงานไว้ใน _meta เพื่อให้หน้าเว็บแสดงได้
+API key ต้องเก็บใน GitHub Secret ชื่อ SCRAPINGANT_API_KEY เท่านั้น
+ห้ามเขียน API key ลงในไฟล์นี้
 """
 
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError, sync_playwright
+import requests
+from bs4 import BeautifulSoup
 
 
 PAGES = {
@@ -33,13 +32,21 @@ PAGES = {
 DATA_FILE = Path(__file__).with_name("results.json")
 THAI_TZ = timezone(timedelta(hours=7), name="Asia/Bangkok")
 MAX_HISTORY_PER_TYPE = 730
+SCRAPINGANT_ENDPOINT = "https://api.scrapingant.com/v2/general"
 THAI_MONTHS = {
-    "มกราคม": 1, "กุมภาพันธ์": 2, "มีนาคม": 3, "เมษายน": 4,
-    "พฤษภาคม": 5, "มิถุนายน": 6, "กรกฎาคม": 7, "สิงหาคม": 8,
-    "กันยายน": 9, "ตุลาคม": 10, "พฤศจิกายน": 11, "ธันวาคม": 12,
+    "มกราคม": 1,
+    "กุมภาพันธ์": 2,
+    "มีนาคม": 3,
+    "เมษายน": 4,
+    "พฤษภาคม": 5,
+    "มิถุนายน": 6,
+    "กรกฎาคม": 7,
+    "สิงหาคม": 8,
+    "กันยายน": 9,
+    "ตุลาคม": 10,
+    "พฤศจิกายน": 11,
+    "ธันวาคม": 12,
 }
-
-# Selector แรกคือรูปแบบเดิม ส่วนรายการถัดไปเป็นทางสำรองเมื่อเว็บไซต์เปลี่ยน class
 RESULT_SELECTORS = (
     "div.bg-gray-200.text-xl.text-black.font-semibold",
     "[data-result]",
@@ -55,13 +62,8 @@ def empty_data() -> dict:
 def load_data() -> dict:
     if not DATA_FILE.exists():
         return empty_data()
-
-    try:
-        with DATA_FILE.open(encoding="utf-8") as file:
-            data = json.load(file)
-    except (json.JSONDecodeError, OSError) as exc:
-        raise RuntimeError(f"อ่าน {DATA_FILE.name} ไม่สำเร็จ: {exc}") from exc
-
+    with DATA_FILE.open(encoding="utf-8") as file:
+        data = json.load(file)
     for key in PAGES:
         if not isinstance(data.get(key), list):
             data[key] = []
@@ -74,73 +76,169 @@ def digits_only(value: str) -> str:
     return re.sub(r"\D", "", value or "")
 
 
-def extract_numbers(page: Page) -> list[str]:
-    """คืนค่ากลุ่มตัวเลขที่มองเห็น โดยกรองปี เวลา และข้อความอื่นออก"""
+def fetch_html(
+    api_key: str,
+    target_url: str,
+    render_javascript: bool,
+) -> str:
+    # A fragment makes ScrapingAnt see a unique URL, while browsers do not send
+    # the fragment to ExpHuay. This avoids stale provider cache without making
+    # ExpHuay see an unfamiliar query string that can trigger bot protection.
+    cache_busted_url = (
+        f"{target_url}#_scrape_ts="
+        f"{int(datetime.now(timezone.utc).timestamp())}"
+    )
+    attempts = (cache_busted_url, target_url)
+    last_html = ""
+
+    for attempt_url in attempts:
+        response = requests.get(
+            SCRAPINGANT_ENDPOINT,
+            params={
+                "x-api-key": api_key,
+                "url": attempt_url,
+                "browser": "true" if render_javascript else "false",
+                "timeout": "60",
+            },
+            timeout=90,
+        )
+        if not response.ok:
+            detail = response.text.strip().replace("\n", " ")[:500]
+            raise RuntimeError(
+                f"ScrapingAnt HTTP {response.status_code}: {detail}"
+            )
+
+        last_html = response.text
+        title_match = re.search(
+            r"<title[^>]*>(.*?)</title>",
+            last_html,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        title = (
+            BeautifulSoup(title_match.group(1), "html.parser").get_text(
+                " ",
+                strip=True,
+            )
+            if title_match
+            else ""
+        )
+        if title.lower() not in {"just a moment...", "รอสักครู่..."}:
+            return last_html
+
+        print(
+            "พบหน้าป้องกันบอต กำลังลองใหม่ด้วย URL ปกติ...",
+            file=sys.stderr,
+        )
+
+    return last_html
+
+
+def extract_numbers(soup: BeautifulSoup) -> list[str]:
     for selector in RESULT_SELECTORS:
-        values = page.locator(selector).all_inner_texts()
-        numbers = [digits_only(value) for value in values]
+        numbers = [
+            digits_only(element.get_text(" ", strip=True))
+            for element in soup.select(selector)
+        ]
         numbers = [value for value in numbers if 2 <= len(value) <= 6]
         if len(numbers) >= 2:
             return numbers
 
-    # ทางสำรองสุดท้าย: มองหา element ที่มีเฉพาะเลข 2–6 หลัก
-    values = page.locator("main div, main span, main p").all_inner_texts()
-    candidates = []
-    for value in values:
-        stripped = value.strip()
-        if re.fullmatch(r"\d{2,6}", stripped):
-            candidates.append(stripped)
-
-    # ตัดค่าซ้ำโดยรักษาลำดับเดิม
+    candidates: list[str] = []
+    main = soup.select_one("main")
+    if main:
+        for element in main.select("div, span, p"):
+            value = element.get_text(" ", strip=True)
+            if re.fullmatch(r"\d{2,6}", value):
+                candidates.append(value)
     return list(dict.fromkeys(candidates))
 
 
-def extract_draw_date(page: Page, fallback: datetime) -> str:
-    heading = page.locator("h1").first.inner_text().strip()
-    match = re.search(r"(\d{1,2})\s+([ก-๙]+)\s+(\d{4})", heading)
+def extract_draw_date(soup: BeautifulSoup, fallback: datetime) -> str:
+    heading = soup.select_one("h1")
+    heading_text = heading.get_text(" ", strip=True) if heading else ""
+    match = re.search(r"(\d{1,2})\s+([ก-๙]+)\s+(\d{4})", heading_text)
     if not match or match.group(2) not in THAI_MONTHS:
         return fallback.date().isoformat()
-
     day, month_name, year = match.groups()
     christian_year = int(year) - 543 if int(year) > 2400 else int(year)
-    return datetime(christian_year, THAI_MONTHS[month_name], int(day)).date().isoformat()
-
-
-def scrape_one(page: Page, url: str, now: datetime) -> tuple[list[str], str]:
-    page.goto(url, wait_until="domcontentloaded", timeout=45_000)
-    page.wait_for_timeout(5_000)
-
-    # บางหน้าดึงผลด้วย JavaScript หลังหน้าเว็บหลักโหลดเสร็จ
-    try:
-        page.wait_for_load_state("networkidle", timeout=15_000)
-    except PlaywrightTimeoutError:
-        pass
-
-    numbers = extract_numbers(page)
-    if len(numbers) < 2:
-        raise RuntimeError(
-            f"ไม่พบชุดผลรางวัล (title={page.title()!r}, url={page.url!r})"
-        )
-    return numbers, extract_draw_date(page, now)
+    return datetime(
+        christian_year,
+        THAI_MONTHS[month_name],
+        int(day),
+    ).date().isoformat()
 
 
 def normalize_result(key: str, numbers: list[str]) -> tuple[str, str, str]:
-    """แปลงข้อมูลหน้าเว็บเป็น เลขหลัก, 3 ตัวบน และ 2 ตัวล่าง"""
-    if key in {"lao", "government"}:
-        # หวยลาวมักแสดงเลขหลัก 6 ตัว แล้วตามด้วย 3 ตัวบน/2 ตัวล่าง
-        main = next((n for n in numbers if len(n) == 6), numbers[0])
+    if key in {"government", "lao"}:
+        main = next((number for number in numbers if len(number) == 6), "")
     else:
-        # ฮานอยอาจแสดงเลขหลัก 5 ตัว หรือแสดงเฉพาะ 3 ตัวบนกับ 2 ตัวล่าง
-        main = next((n for n in numbers if len(n) == 5), "")
+        main = next((number for number in numbers if len(number) == 5), "")
 
-    top3 = next((n for n in numbers if len(n) == 3), main[-3:] if main else "")
-    bottom2 = next((n for n in numbers if len(n) == 2), main[-2:] if main else "")
+    top3 = next((number for number in numbers if len(number) == 3), "")
+    bottom2 = next((number for number in numbers if len(number) == 2), "")
 
-    if not main:
+    if not main and top3 and bottom2:
         main = f"{top3}{bottom2}"
+    if not top3 and main:
+        top3 = main[-3:]
+    if not bottom2 and main:
+        bottom2 = main[-2:]
     if not (main and top3 and bottom2):
         raise RuntimeError(f"ข้อมูลไม่ครบ: {numbers!r}")
     return main, top3, bottom2
+
+
+def correct_dow_draw_date(
+    draw_date: str,
+    now: datetime,
+) -> str:
+    """Correct ExpHuay's occasional one-day-stale DJI heading.
+
+    The Dow result shown early Tuesday-Saturday Thailand time belongs to the
+    previous calendar day. Sunday and Monday are intentionally excluded.
+    """
+    if now.weekday() not in {1, 2, 3, 4, 5}:
+        return draw_date
+
+    expected = (now.date() - timedelta(days=1)).isoformat()
+    if draw_date < expected:
+        print(
+            "[dow] แก้วันที่งวดจาก "
+            f"{draw_date} เป็น {expected} (เวลาประเทศไทย {now:%Y-%m-%d %H:%M})"
+        )
+        return expected
+    return draw_date
+
+
+def remove_recent_duplicate_result(
+    entries: list[dict],
+    draw_date: str,
+    main: str,
+    top3: str,
+    bottom2: str,
+) -> list[dict]:
+    """Remove a wrongly dated duplicate when the same DJI result is moved."""
+    current_date = datetime.fromisoformat(draw_date).date()
+    cleaned: list[dict] = []
+    for entry in entries:
+        try:
+            entry_date = datetime.fromisoformat(entry.get("date", "")).date()
+        except (TypeError, ValueError):
+            cleaned.append(entry)
+            continue
+        same_numbers = (
+            entry.get("main") == main
+            and entry.get("top3") == top3
+            and entry.get("bottom2") == bottom2
+        )
+        is_recent_older_copy = (
+            same_numbers
+            and entry_date < current_date
+            and (current_date - entry_date).days <= 3
+        )
+        if not is_recent_older_copy:
+            cleaned.append(entry)
+    return cleaned
 
 
 def upsert(
@@ -170,58 +268,110 @@ def upsert(
 
 
 def save_data(data: dict) -> None:
-    temporary_file = DATA_FILE.with_suffix(".json.tmp")
-    with temporary_file.open("w", encoding="utf-8", newline="\n") as file:
+    with DATA_FILE.open("w", encoding="utf-8", newline="\n") as file:
         json.dump(data, file, ensure_ascii=False, indent=2)
         file.write("\n")
-    temporary_file.replace(DATA_FILE)
 
 
 def main() -> int:
+    api_key = os.environ.get("SCRAPINGANT_API_KEY", "").strip()
+    if not api_key:
+        print(
+            "ไม่พบ GitHub Secret ชื่อ SCRAPINGANT_API_KEY",
+            file=sys.stderr,
+        )
+        return 2
+    render_javascript = (
+        os.environ.get("SCRAPINGANT_BROWSER", "false").strip().lower()
+        == "true"
+    )
+    requested_keys = [
+        key.strip()
+        for key in os.environ.get("LOTTERY_KEYS", "").split(",")
+        if key.strip()
+    ]
+    unknown_keys = [key for key in requested_keys if key not in PAGES]
+    if unknown_keys:
+        print(
+            f"ไม่รู้จักประเภทรางวัล: {', '.join(unknown_keys)}",
+            file=sys.stderr,
+        )
+        return 2
+    selected_pages = (
+        {key: PAGES[key] for key in requested_keys}
+        if requested_keys
+        else PAGES
+    )
+    print(
+        "โหมดทดลอง: "
+        + (
+            "เปิด JavaScript (ประมาณ 10 เครดิตต่อหน้า)"
+            if render_javascript
+            else "ไม่เปิด JavaScript (ประมาณ 1 เครดิตต่อหน้า)"
+        )
+    )
+    print("รายการที่จะดึง: " + ", ".join(selected_pages))
+
     data = load_data()
     now = datetime.now(THAI_TZ)
-    errors: dict[str, str] = {}
     updated: list[str] = []
+    errors: dict[str, str] = {}
 
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True)
-        context = browser.new_context(
-            locale="th-TH",
-            timezone_id="Asia/Bangkok",
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/138.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1365, "height": 768},
-        )
-        page = context.new_page()
-
-        for key, url in PAGES.items():
-            try:
-                numbers, draw_date = scrape_one(page, url, now)
-                main_number, top3, bottom2 = normalize_result(key, numbers)
-                data[key] = upsert(data[key], draw_date, now, main_number, top3, bottom2)
-                updated.append(key)
-                print(f"[{key}] สำเร็จ: {main_number} / {top3} / {bottom2}")
-            except Exception as exc:  # เก็บข้อมูลเก่าไว้และรายงานแต่ละหน้า
-                errors[key] = str(exc)
-                print(f"[{key}] ไม่สำเร็จ: {exc}", file=sys.stderr)
-
-        context.close()
-        browser.close()
+    for key, url in selected_pages.items():
+        try:
+            html = fetch_html(api_key, url, render_javascript)
+            soup = BeautifulSoup(html, "html.parser")
+            title = soup.title.get_text(" ", strip=True) if soup.title else ""
+            if (
+                "รอสักครู่" in title
+                or "just a moment" in title.lower()
+            ):
+                raise RuntimeError("เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต")
+            numbers = extract_numbers(soup)
+            if len(numbers) < 2:
+                raise RuntimeError(
+                    f"ไม่พบชุดผลรางวัล (title={title!r})"
+                )
+            draw_date = extract_draw_date(soup, now)
+            main_number, top3, bottom2 = normalize_result(key, numbers)
+            if key == "dow":
+                draw_date = correct_dow_draw_date(draw_date, now)
+                data[key] = remove_recent_duplicate_result(
+                    data[key],
+                    draw_date,
+                    main_number,
+                    top3,
+                    bottom2,
+                )
+            data[key] = upsert(
+                data[key],
+                draw_date,
+                now,
+                main_number,
+                top3,
+                bottom2,
+            )
+            updated.append(key)
+            print(
+                f"[{key}] สำเร็จ: "
+                f"{draw_date} / {main_number} / {top3} / {bottom2}"
+            )
+        except Exception as exc:
+            errors[key] = str(exc)
+            print(f"[{key}] ไม่สำเร็จ: {exc}", file=sys.stderr)
 
     data["_meta"] = {
+        "provider": "scrapingant",
+        "render_javascript": render_javascript,
+        "requested": list(selected_pages),
         "last_run": now.isoformat(timespec="seconds"),
         "updated": updated,
         "errors": errors,
     }
     save_data(data)
 
-    if not updated:
-        print("ไม่สามารถดึงข้อมูลได้ทุกประเภท", file=sys.stderr)
-        return 1
-    return 0
+    print(f"สรุป: สำเร็จ {len(updated)}/{len(selected_pages)} หน้า")
+    return 0 if updated else 1
 
 
 if __name__ == "__main__":
