@@ -81,11 +81,18 @@ def fetch_html(
     target_url: str,
     render_javascript: bool,
 ) -> str:
+    # Make every target URL unique so neither the provider nor the origin can
+    # return an older rendered lottery page from cache.
+    separator = "&" if "?" in target_url else "?"
+    cache_busted_url = (
+        f"{target_url}{separator}_scrape_ts="
+        f"{int(datetime.now(timezone.utc).timestamp())}"
+    )
     response = requests.get(
         SCRAPINGANT_ENDPOINT,
         params={
             "x-api-key": api_key,
-            "url": target_url,
+            "url": cache_busted_url,
             "browser": "true" if render_javascript else "false",
             "timeout": "60",
         },
