@@ -97,11 +97,7 @@
   </main>
 
   <script>
-    const githubPagesOwner=location.hostname.endsWith(".github.io")?location.hostname.split(".")[0]:"";
-    const githubPagesRepo=location.hostname.endsWith(".github.io")?location.pathname.split("/").filter(Boolean)[0]:"";
-    const DATA_URL=githubPagesOwner&&githubPagesRepo
-      ?`https://raw.githubusercontent.com/${githubPagesOwner}/${githubPagesRepo}/main/results.json`
-      :"./results.json";
+    const DATA_URL="./results.json";
     const TYPES=[
       {id:"government",name:"หวยรัฐบาลไทย",group:"government",icon:"🇹🇭",days:[1,16],hour:16,minute:0,color:"#ffc934"},
       {id:"lao",name:"หวยลาวพัฒนา",group:"regional",icon:"🇱🇦",weekdays:[1,2,3,4,5],hour:20,minute:30,color:"#ec31af",six:true,top2:true},
