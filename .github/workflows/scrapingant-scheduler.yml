@@ -1,0 +1,14 @@
+name: Wake lottery updater every 5 minutes
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  wake-updater:
+    uses: ./.github/workflows/scrapingant-production.yml
+    secrets: inherit

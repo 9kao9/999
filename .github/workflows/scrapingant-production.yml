@@ -1,6 +1,7 @@
 name: Update lottery results with ScrapingAnt
 
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
       lottery_keys:
@@ -13,6 +14,7 @@ on:
       - main
     paths:
       - ".github/workflows/scrapingant-production.yml"
+      - ".github/workflows/scrapingant-scheduler.yml"
       - "scrape_with_scrapingant.py"
   schedule:
     # ปลุกตัวตรวจกลางทุก 5 นาที ตัวตรวจจะเรียก ScrapingAnt เฉพาะรายการ
