@@ -210,6 +210,29 @@ def correct_dow_draw_date(
     return draw_date
 
 
+def correct_nikkei_morning_draw_date(
+    draw_date: str,
+    now: datetime,
+) -> str:
+    """Use today's date when today's Nikkei morning result is already out.
+
+    ExpHuay can briefly return the new result numbers with the previous date
+    still present in the rendered heading.
+    """
+    if now.weekday() > 4 or (now.hour, now.minute) < (9, 30):
+        return draw_date
+
+    expected = now.date().isoformat()
+    if draw_date < expected:
+        print(
+            "[nikkei_morning] แก้วันที่งวดจาก "
+            f"{draw_date} เป็น {expected} "
+            f"(เวลาประเทศไทย {now:%Y-%m-%d %H:%M})"
+        )
+        return expected
+    return draw_date
+
+
 def remove_recent_duplicate_result(
     entries: list[dict],
     draw_date: str,
@@ -336,6 +359,15 @@ def main() -> int:
             main_number, top3, bottom2 = normalize_result(key, numbers)
             if key == "dow":
                 draw_date = correct_dow_draw_date(draw_date, now)
+                data[key] = remove_recent_duplicate_result(
+                    data[key],
+                    draw_date,
+                    main_number,
+                    top3,
+                    bottom2,
+                )
+            elif key == "nikkei_morning":
+                draw_date = correct_nikkei_morning_draw_date(draw_date, now)
                 data[key] = remove_recent_duplicate_result(
                     data[key],
                     draw_date,
