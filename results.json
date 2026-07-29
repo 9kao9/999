@@ -1,6 +1,14 @@
 {
   "lao": [
     {
+      "date": "2026-07-29",
+      "time": "22:36",
+      "status": "out",
+      "main": "081480",
+      "top3": "480",
+      "bottom2": "14"
+    },
+    {
       "date": "2026-07-28",
       "time": "21:50",
       "status": "out",
@@ -27,6 +35,14 @@
       "bottom2": "20"
     },
     {
+      "date": "2026-07-28",
+      "time": "22:36",
+      "status": "out",
+      "main": "85272",
+      "top3": "272",
+      "bottom2": "20"
+    },
+    {
       "date": "2026-07-27",
       "time": "02:32",
       "status": "out",
@@ -46,11 +62,11 @@
     },
     {
       "date": "2026-07-28",
-      "time": "21:50",
+      "time": "22:36",
       "status": "out",
-      "main": "65000",
-      "top3": "000",
-      "bottom2": "77"
+      "main": "39983",
+      "top3": "983",
+      "bottom2": "68"
     },
     {
       "date": "2026-07-27",
@@ -64,7 +80,7 @@
   "hanoi_vip": [
     {
       "date": "2026-07-29",
-      "time": "20:01",
+      "time": "22:36",
       "status": "out",
       "main": "19787",
       "top3": "787",
@@ -91,11 +107,27 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "government",
+      "lao",
+      "hanoi_special",
+      "hanoi_normal",
+      "hanoi_vip",
+      "dow",
+      "nikkei_morning",
+      "nikkei_afternoon",
+      "thai_stock"
     ],
-    "last_run": "2026-07-29T20:01:27+07:00",
+    "last_run": "2026-07-29T22:36:15+07:00",
     "updated": [
-      "hanoi_vip"
+      "government",
+      "lao",
+      "hanoi_special",
+      "hanoi_normal",
+      "hanoi_vip",
+      "dow",
+      "nikkei_morning",
+      "nikkei_afternoon",
+      "thai_stock"
     ],
     "errors": {}
   },
@@ -110,7 +142,7 @@
     },
     {
       "date": "2026-07-15",
-      "time": "02:32",
+      "time": "22:36",
       "status": "out",
       "main": "639214",
       "top3": "214",
@@ -121,6 +153,14 @@
     {
       "date": "2026-07-28",
       "time": "05:13",
+      "status": "out",
+      "main": "73224",
+      "top3": "732",
+      "bottom2": "24"
+    },
+    {
+      "date": "2026-07-27",
+      "time": "22:36",
       "status": "out",
       "main": "73224",
       "top3": "732",
@@ -139,6 +179,14 @@
     {
       "date": "2026-07-29",
       "time": "13:11",
+      "status": "out",
+      "main": "98606",
+      "top3": "986",
+      "bottom2": "06"
+    },
+    {
+      "date": "2026-07-28",
+      "time": "22:36",
       "status": "out",
       "main": "98606",
       "top3": "986",
@@ -164,11 +212,11 @@
     },
     {
       "date": "2026-07-28",
-      "time": "21:50",
+      "time": "22:36",
       "status": "out",
-      "main": "49227",
-      "top3": "492",
-      "bottom2": "27"
+      "main": "41973",
+      "top3": "419",
+      "bottom2": "73"
     },
     {
       "date": "2026-07-27",
@@ -182,15 +230,7 @@
   "thai_stock": [
     {
       "date": "2026-07-28",
-      "time": "21:50",
-      "status": "out",
-      "main": "04792",
-      "top3": "047",
-      "bottom2": "92"
-    },
-    {
-      "date": "2026-07-27",
-      "time": "02:32",
+      "time": "22:36",
       "status": "out",
       "main": "04792",
       "top3": "047",
