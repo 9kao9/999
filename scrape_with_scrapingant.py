@@ -233,6 +233,25 @@ def correct_nikkei_morning_draw_date(
     return draw_date
 
 
+def correct_nikkei_afternoon_draw_date(
+    draw_date: str,
+    now: datetime,
+) -> str:
+    """Use today's date after the weekday Nikkei afternoon draw."""
+    if now.weekday() > 4 or (now.hour, now.minute) < (13, 0):
+        return draw_date
+
+    expected = now.date().isoformat()
+    if draw_date < expected:
+        print(
+            "[nikkei_afternoon] แก้วันที่งวดจาก "
+            f"{draw_date} เป็น {expected} "
+            f"(เวลาประเทศไทย {now:%Y-%m-%d %H:%M})"
+        )
+        return expected
+    return draw_date
+
+
 def remove_recent_duplicate_result(
     entries: list[dict],
     draw_date: str,
@@ -368,6 +387,15 @@ def main() -> int:
                 )
             elif key == "nikkei_morning":
                 draw_date = correct_nikkei_morning_draw_date(draw_date, now)
+                data[key] = remove_recent_duplicate_result(
+                    data[key],
+                    draw_date,
+                    main_number,
+                    top3,
+                    bottom2,
+                )
+            elif key == "nikkei_afternoon":
+                draw_date = correct_nikkei_afternoon_draw_date(draw_date, now)
                 data[key] = remove_recent_duplicate_result(
                     data[key],
                     draw_date,
