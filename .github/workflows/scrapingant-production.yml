@@ -2,6 +2,12 @@ name: Update lottery results with ScrapingAnt
 
 on:
   workflow_call:
+    inputs:
+      scheduled_check:
+        description: "ตรวจเฉพาะรายการที่ถึงเวลา"
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       lottery_keys:
@@ -43,8 +49,10 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           MANUAL_KEYS: ${{ inputs.lottery_keys }}
+          SCHEDULED_CHECK: ${{ inputs.scheduled_check }}
         run: |
-          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && \
+             [ "$SCHEDULED_CHECK" != "true" ]; then
             echo "keys=$MANUAL_KEYS" >> "$GITHUB_OUTPUT"
             echo "should_run=true" >> "$GITHUB_OUTPUT"
             exit 0
