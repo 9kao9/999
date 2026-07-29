@@ -9,18 +9,9 @@ on:
         type: string
         default: ""
   schedule:
-    # GitHub ใช้เวลา UTC / ตัวเลขด้านขวาคือเวลาไทยโดยประมาณ
-    - cron: "30,45 20 * * 1-5"       # ดาวโจนส์ 03:30, 03:45 อ.-ส.
-    - cron: "40,55 2 * * 1-5"        # นิเคอิเช้า 09:40, 09:55 จ.-ศ.
-    - cron: "30 3,4,5 * * 1-5"       # นิเคอิเช้าตรวจซ้ำ 10:30, 11:30, 12:30
-    - cron: "10,25,40,55 6 * * 1-5"  # นิเคอิบ่าย 13:10, 13:25, 13:40, 13:55 จ.-ศ.
-    - cron: "10,25 9 1,16 * *"       # รัฐบาลไทย 16:10, 16:25 วันที่ 1/16
-    - cron: "55 9 * * 1-5"           # หุ้นไทยเย็น 16:55 จ.-ศ.
-    - cron: "10 10 * * 1-5"          # หุ้นไทยเย็นรอบตรวจซ้ำ 17:10
-    - cron: "40,55 10 * * *"         # ฮานอยพิเศษ 17:40, 17:55
-    - cron: "40,55 11 * * *"         # ฮานอยปกติ 18:40, 18:55
-    - cron: "40,55 12 * * *"         # ฮานอย VIP 19:40, 19:55
-    - cron: "40,55 13 * * 1-5"       # ลาวพัฒนา 20:40, 20:55 จ.-ศ.
+    # ปลุกตัวตรวจกลางทุก 10 นาที ตัวตรวจจะเรียก ScrapingAnt เฉพาะรายการ
+    # ที่ถึงเวลาแล้วและยังไม่มีผลของงวดนั้นใน results.json
+    - cron: "*/10 * * * *"
 
 permissions:
   contents: write
@@ -38,43 +29,91 @@ jobs:
       - name: Download repository
         uses: actions/checkout@v5
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install dependencies
-        run: python -m pip install -r requirements.txt
-
       - name: Choose only the lottery that is due
         id: choose
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
           MANUAL_KEYS: ${{ inputs.lottery_keys }}
-          CRON_VALUE: ${{ github.event.schedule }}
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "keys=$MANUAL_KEYS" >> "$GITHUB_OUTPUT"
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          case "$CRON_VALUE" in
-            "30,45 20 * * 1-5") echo "keys=dow" >> "$GITHUB_OUTPUT" ;;
-            "40,55 2 * * 1-5") echo "keys=nikkei_morning" >> "$GITHUB_OUTPUT" ;;
-            "30 3,4,5 * * 1-5") echo "keys=nikkei_morning" >> "$GITHUB_OUTPUT" ;;
-            "10,25,40,55 6 * * 1-5") echo "keys=nikkei_afternoon" >> "$GITHUB_OUTPUT" ;;
-            "10,25 9 1,16 * *") echo "keys=government" >> "$GITHUB_OUTPUT" ;;
-            "55 9 * * 1-5"|"10 10 * * 1-5") echo "keys=thai_stock" >> "$GITHUB_OUTPUT" ;;
-            "40,55 10 * * *") echo "keys=hanoi_special" >> "$GITHUB_OUTPUT" ;;
-            "40,55 11 * * *") echo "keys=hanoi_normal" >> "$GITHUB_OUTPUT" ;;
-            "40,55 12 * * *") echo "keys=hanoi_vip" >> "$GITHUB_OUTPUT" ;;
-            "40,55 13 * * 1-5") echo "keys=lao" >> "$GITHUB_OUTPUT" ;;
-            *) echo "ไม่รู้จักตารางเวลา: $CRON_VALUE"; exit 1 ;;
-          esac
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from datetime import datetime, timedelta
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          now = datetime.now(ZoneInfo("Asia/Bangkok"))
+          today = now.date().isoformat()
+          weekday = now.weekday()
+          minute = now.hour * 60 + now.minute
+          path = Path("results.json")
+          data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+          def has_date(key, expected):
+              return any(
+                  isinstance(item, dict) and item.get("date") == expected
+                  for item in data.get(key, [])
+              )
+
+          due = []
+
+          # ดาวโจนส์ออกช่วงเช้าวันอังคาร-เสาร์ และเป็นงวดวันก่อนหน้า
+          if weekday in {1, 2, 3, 4, 5} and 210 <= minute <= 300:
+              expected = (now.date() - timedelta(days=1)).isoformat()
+              if not has_date("dow", expected):
+                  due.append("dow")
+
+          if weekday <= 4:
+              if 580 <= minute <= 779 and not has_date("nikkei_morning", today):
+                  due.append("nikkei_morning")
+              if 790 <= minute <= 900 and not has_date("nikkei_afternoon", today):
+                  due.append("nikkei_afternoon")
+              if 1015 <= minute <= 1110 and not has_date("thai_stock", today):
+                  due.append("thai_stock")
+              if 1240 <= minute <= 1320 and not has_date("lao", today):
+                  due.append("lao")
+
+          if now.day in {1, 16} and 970 <= minute <= 1080:
+              if not has_date("government", today):
+                  due.append("government")
+
+          daily_windows = {
+              "hanoi_special": (1060, 1140),
+              "hanoi_normal": (1120, 1200),
+              "hanoi_vip": (1180, 1260),
+          }
+          for key, (start, end) in daily_windows.items():
+              if start <= minute <= end and not has_date(key, today):
+                  due.append(key)
+
+          keys = ",".join(dict.fromkeys(due))
+          print(f"keys={keys}")
+          print(f"should_run={'true' if keys else 'false'}")
+          print(
+              f"notice=เวลาไทย {now:%Y-%m-%d %H:%M}; "
+              f"รายการที่ต้องดึง: {keys or 'ไม่มี'}"
+          )
+          PY
+
+      - name: Set up Python
+        if: steps.choose.outputs.should_run == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        if: steps.choose.outputs.should_run == 'true'
+        run: python -m pip install -r requirements.txt
 
       - name: Scrape selected result with JavaScript
+        if: steps.choose.outputs.should_run == 'true'
         env:
           SCRAPINGANT_API_KEY: ${{ secrets.SCRAPINGANT_API_KEY }}
           SCRAPINGANT_BROWSER: "true"
@@ -82,7 +121,7 @@ jobs:
         run: python scrape_with_scrapingant.py
 
       - name: Save results to GitHub
-        if: always()
+        if: always() && steps.choose.outputs.should_run == 'true'
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
