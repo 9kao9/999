@@ -9,9 +9,9 @@ on:
         type: string
         default: ""
   schedule:
-    # ปลุกตัวตรวจกลางทุก 10 นาที ตัวตรวจจะเรียก ScrapingAnt เฉพาะรายการ
+    # ปลุกตัวตรวจกลางทุก 5 นาที ตัวตรวจจะเรียก ScrapingAnt เฉพาะรายการ
     # ที่ถึงเวลาแล้วและยังไม่มีผลของงวดนั้นใน results.json
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
@@ -64,29 +64,29 @@ jobs:
           due = []
 
           # ดาวโจนส์ออกช่วงเช้าวันอังคาร-เสาร์ และเป็นงวดวันก่อนหน้า
-          if weekday in {1, 2, 3, 4, 5} and 210 <= minute <= 300:
+          if weekday in {1, 2, 3, 4, 5} and 203 <= minute <= 300:
               expected = (now.date() - timedelta(days=1)).isoformat()
               if not has_date("dow", expected):
                   due.append("dow")
 
           if weekday <= 4:
-              if 580 <= minute <= 779 and not has_date("nikkei_morning", today):
+              if 573 <= minute <= 779 and not has_date("nikkei_morning", today):
                   due.append("nikkei_morning")
-              if 790 <= minute <= 900 and not has_date("nikkei_afternoon", today):
+              if 783 <= minute <= 900 and not has_date("nikkei_afternoon", today):
                   due.append("nikkei_afternoon")
-              if 1015 <= minute <= 1110 and not has_date("thai_stock", today):
+              if 1008 <= minute <= 1110 and not has_date("thai_stock", today):
                   due.append("thai_stock")
-              if 1240 <= minute <= 1320 and not has_date("lao", today):
+              if 1233 <= minute <= 1320 and not has_date("lao", today):
                   due.append("lao")
 
-          if now.day in {1, 16} and 970 <= minute <= 1080:
+          if now.day in {1, 16} and 963 <= minute <= 1080:
               if not has_date("government", today):
                   due.append("government")
 
           daily_windows = {
-              "hanoi_special": (1060, 1140),
-              "hanoi_normal": (1120, 1200),
-              "hanoi_vip": (1180, 1260),
+              "hanoi_special": (1053, 1140),
+              "hanoi_normal": (1113, 1200),
+              "hanoi_vip": (1173, 1260),
           }
           for key, (start, end) in daily_windows.items():
               if start <= minute <= end and not has_date(key, today):
