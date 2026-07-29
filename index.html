@@ -1,157 +1,149 @@
-name: Update lottery results with ScrapingAnt
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070b25">
+  <title>ผลหวยวันนี้</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    :root{color-scheme:dark;--bg:#060a22;--bg2:#10113b;--panel:#101735;--soft:#151e43;--text:#f8f9ff;--muted:#9da8ca;--line:#2b3967;--pink:#f22ba2;--purple:#843bff;--cyan:#35d7ff;--green:#35d990;--gold:#ffc934;--orange:#ffb020;--shadow:0 20px 60px rgba(0,0,0,.28)}
+    :root[data-theme="light"]{color-scheme:light;--bg:#f3f5ff;--bg2:#ede8ff;--panel:#fff;--soft:#f2f5ff;--text:#111936;--muted:#657092;--line:#d7ddf1;--shadow:0 18px 45px rgba(37,46,100,.12)}
+    body{margin:0;min-height:100vh;background:radial-gradient(circle at 88% 7%,rgba(124,39,255,.28),transparent 31%),radial-gradient(circle at 3% 33%,rgba(26,78,173,.25),transparent 27%),linear-gradient(180deg,var(--bg),#05091d 60%,var(--bg));color:var(--text);font-family:"Kanit",sans-serif}
+    :root[data-theme="light"] body{background:radial-gradient(circle at 88% 7%,rgba(124,39,255,.12),transparent 31%),linear-gradient(180deg,var(--bg),#f8f9ff)}
+    button,select{font:inherit}.app{width:min(1320px,calc(100% - 32px));margin:auto;padding:34px 0 58px}
+    .masthead{text-align:center;position:relative}.masthead h1{font-size:clamp(38px,5vw,64px);line-height:1;margin:0;font-weight:700;letter-spacing:-.04em;text-shadow:0 5px 22px rgba(0,0,0,.25)}
+    .system-time{margin-top:17px;color:var(--muted);display:flex;gap:10px;align-items:center;justify-content:center;font-size:15px}.date-time-pill{min-height:42px;display:inline-flex;align-items:center;padding:8px 15px;border:1px solid var(--line);border-radius:13px;background:rgba(16,23,53,.78);box-shadow:0 8px 26px rgba(0,0,0,.16);color:var(--text);font-size:17px;font-weight:600;letter-spacing:.01em}.date-time-separator{color:var(--purple);font-weight:700}:root[data-theme="light"] .date-time-pill{background:rgba(255,255,255,.9)}
+    .nav{position:sticky;top:10px;z-index:20;margin:26px auto 22px;padding:4px;max-width:1060px;display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(194,96,255,.6);border-radius:28px;background:rgba(13,19,52,.88);backdrop-filter:blur(18px);box-shadow:var(--shadow)}
+    :root[data-theme="light"] .nav{background:rgba(255,255,255,.88)}
+    .nav button{position:relative;z-index:1;pointer-events:auto;border:0;background:transparent;color:var(--text);padding:13px 8px;border-radius:24px;font-weight:600;cursor:pointer;white-space:nowrap}
+    .nav button.active{background:linear-gradient(100deg,var(--pink),var(--purple));box-shadow:0 0 22px rgba(242,43,162,.42)}
+    .view{display:none}.view.active{display:block}.section-title{display:flex;align-items:center;gap:11px;font-size:24px;margin:22px 0 12px}.section-title::before{content:"";width:4px;height:29px;border-radius:8px;background:linear-gradient(var(--pink),var(--purple))}.section-icon{display:inline-grid;place-items:center;width:35px;height:35px;border:1px solid var(--line);border-radius:11px;background:linear-gradient(145deg,var(--soft),rgba(132,59,255,.18));font-size:20px;box-shadow:0 8px 22px rgba(0,0,0,.16)}
+    .featured{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}.featured.single{grid-template-columns:1fr}.hero-card{position:relative;overflow:hidden;min-height:250px;padding:22px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(22,31,70,.96),rgba(8,12,37,.96));box-shadow:var(--shadow)}
+    :root[data-theme="light"] .hero-card{background:linear-gradient(135deg,#fff,#f5f3ff)}
+    .hero-card.government{border-color:#997927;background:radial-gradient(circle at 86% 15%,rgba(255,202,52,.16),transparent 35%),linear-gradient(135deg,#28200c,#090d25)}
+    :root[data-theme="light"] .hero-card.government{background:radial-gradient(circle at 86% 15%,rgba(255,202,52,.2),transparent 35%),linear-gradient(135deg,#fffaf0,#fff)}
+    .hero-card.lao{border-color:#9e2d91;background:radial-gradient(circle at 88% 18%,rgba(226,35,151,.22),transparent 35%),linear-gradient(135deg,#35103e,#101035)}
+    :root[data-theme="light"] .hero-card.lao{background:radial-gradient(circle at 88% 18%,rgba(226,35,151,.12),transparent 35%),linear-gradient(135deg,#fff,#fff5fd)}
+    .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.identity{display:flex;gap:13px;align-items:center}.symbol{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;font-size:30px;background:linear-gradient(145deg,var(--soft),rgba(255,255,255,.06));border:1px solid var(--line);box-shadow:0 10px 25px rgba(0,0,0,.2);filter:drop-shadow(0 3px 4px rgba(0,0,0,.18))}
+    .hero-card h2{font-size:25px;margin:0}.date-line{color:var(--muted);font-size:13px;margin-top:3px}.status{display:inline-flex;align-items:center;gap:7px;padding:0;font-size:13px;font-weight:600;white-space:nowrap;border:0;background:transparent}.status.out{color:var(--green);background:transparent}.status.wait{color:var(--orange);background:transparent}.status-dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+    .result-main{text-align:center;margin:18px 0 12px}.result-label{color:var(--muted);font-size:13px}.big-number{font:700 clamp(42px,6vw,72px)/1 "Kanit",sans-serif;letter-spacing:.08em;margin-top:4px}.government .big-number{color:var(--gold);text-shadow:0 5px 25px rgba(255,201,52,.22)}
+    .breakdown{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}.breakdown:has(>div:nth-child(2):last-child){grid-template-columns:repeat(2,1fr)}.breakdown>div{text-align:center;padding:11px 8px;background:rgba(255,255,255,.025)}.breakdown>div+div{border-left:1px solid var(--line)}.breakdown strong{display:block;font:700 24px "Kanit",sans-serif;margin-top:2px}.breakdown span{font-size:12px;color:var(--muted)}
+    .lottery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mini-card{border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,var(--panel),rgba(9,14,42,.92));padding:17px;box-shadow:var(--shadow)}
+    :root[data-theme="light"] .mini-card{background:var(--panel)}.mini-top{display:flex;justify-content:space-between;gap:8px}.mini-name{font-weight:700;font-size:18px}.mini-tag{color:var(--muted);font-size:11px;margin-top:2px}.mini-number{font:700 39px "Kanit",sans-serif;letter-spacing:.08em;text-align:center;margin:17px 0;color:#fff}
+    :root[data-theme="light"] .mini-number{color:var(--text)}.mini-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.mini-breakdown:has(>div:nth-child(2):last-child){grid-template-columns:repeat(2,1fr)}.mini-breakdown div{background:var(--soft);border:1px solid var(--line);border-radius:9px;text-align:center;padding:7px 3px}.mini-breakdown span{display:block;color:var(--muted);font-size:10px}.mini-breakdown strong{font:700 16px "Kanit",sans-serif}
+    .stock-panel{border-top:1px solid var(--line)}.stock-header,.stock-row{display:grid;grid-template-columns:2fr .75fr 1fr 1fr .8fr .8fr;gap:10px;align-items:center;text-align:center}.stock-header{color:var(--muted);font-size:12px;padding:0 17px 7px}.stock-row{position:relative;margin:7px 0;border:1px solid var(--line);border-radius:14px;background:linear-gradient(90deg,var(--panel),rgba(21,30,67,.82));padding:12px 17px;overflow:hidden}
+    :root[data-theme="light"] .stock-row{background:var(--panel)}.stock-row::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--accent)}.stock-name{display:flex;align-items:center;justify-content:center;gap:11px;font-weight:700;font-size:18px;text-align:center}.flag{display:inline-grid;place-items:center;min-width:34px;font-size:27px;filter:drop-shadow(0 4px 7px rgba(0,0,0,.28))}.stock-time{color:var(--muted)}.stock-main-cell{text-align:center}.stock-main{color:#48e2c0;font:700 29px "Kanit",sans-serif;letter-spacing:.08em;text-align:center}.stock-value{font:700 20px "Kanit",sans-serif}.mobile-label{display:none;color:var(--muted);font-size:10px;font-weight:500;margin-bottom:3px}.countdown{color:var(--orange);font:600 13px "Kanit",sans-serif}
+    .history-box{margin-top:24px;border:1px solid var(--line);border-radius:18px;background:rgba(13,20,51,.75);padding:18px;box-shadow:var(--shadow)}
+    :root[data-theme="light"] .history-box{background:var(--panel)}.history-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.history-head h2{display:flex;align-items:center;gap:10px;font-size:24px;margin:0}.history-controls{display:flex;gap:8px}.history-controls select{border:1px solid var(--line);background:var(--soft);color:var(--text);border-radius:10px;padding:8px 10px}.table-shell{position:relative}.table-wrap{overflow:auto;scrollbar-width:thin}table{width:100%;border-collapse:collapse;min-width:660px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}th{font-size:12px;color:var(--muted);font-weight:500}td.number{font-family:"Kanit",sans-serif;font-weight:700}.table-swipe-guide,.scroll-cue{display:none}
+    .empty{color:var(--muted);padding:28px;text-align:center}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}.loading{opacity:.45}.hide{display:none!important}
+    @media(max-width:900px){.app{width:min(100% - 22px,760px);padding-top:24px}.featured{grid-template-columns:1fr}.lottery-grid{grid-template-columns:repeat(2,1fr)}.stock-header{display:none}.stock-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:13px}.stock-name{grid-column:1/-1;padding:1px 2px 6px}.stock-cell{min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--soft)}.stock-main-cell{grid-column:1/-1}.mobile-label{display:block}.stock-time{color:var(--text)}.stock-time strong{font-weight:600}.stock-status .status{width:100%;justify-content:center}.hero-card{min-height:230px}}
+    @media(max-width:620px){.masthead h1{font-size:42px}.system-time{font-size:13px;flex-wrap:wrap}.date-time-pill{font-size:15px;min-height:38px;padding:7px 11px}.date-time-separator{display:none}.nav{top:6px;overflow:auto;display:flex;border-radius:18px}.nav button{min-width:102px;padding:11px}.featured{gap:10px}.hero-card{padding:16px;border-radius:18px}.hero-card h2{font-size:20px}.symbol{width:43px;height:43px;font-size:22px}.big-number{font-size:48px}.breakdown strong{font-size:19px}.lottery-grid{grid-template-columns:1fr}.stock-row{padding:11px}.stock-name{font-size:15px}.stock-main{font-size:25px}.stock-value{font-size:19px}.section-title{font-size:21px}.history-box{padding:14px}.history-head{align-items:flex-start;flex-direction:column}.history-controls{width:100%}.history-controls select{flex:1;min-width:0}.table-swipe-guide{display:flex;justify-content:center;align-items:center;min-height:27px;margin:-2px 0 5px;color:var(--cyan);font-size:12px;font-weight:600;transition:opacity .25s}.table-shell.was-scrolled .table-swipe-guide{opacity:0;height:0;min-height:0;margin:0;overflow:hidden}.swipe-arrows{display:inline-block;margin-right:6px;animation:swipeHint 1.25s ease-in-out infinite}.scroll-cue{display:flex;position:absolute;z-index:3;top:27px;bottom:0;width:38px;align-items:center;justify-content:center;pointer-events:none;color:#fff;font-size:24px;font-weight:700;transition:opacity .2s}.scroll-cue.left{left:0;background:linear-gradient(90deg,rgba(5,10,35,.92),transparent)}.scroll-cue.right{right:0;background:linear-gradient(270deg,rgba(5,10,35,.92),transparent)}.scroll-cue.left::after{content:"‹";animation:nudgeLeft 1.2s ease-in-out infinite}.scroll-cue.right::after{content:"›";animation:nudgeRight 1.2s ease-in-out infinite}.scroll-cue.hidden{opacity:0}.card-head{align-items:flex-start}.status{padding:0;font-size:11px}}@keyframes swipeHint{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}@keyframes nudgeLeft{0%,100%{transform:translateX(0)}50%{transform:translateX(-4px)}}@keyframes nudgeRight{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="masthead">
+      <h1>ผลหวยวันนี้</h1>
+      <div class="system-time"><span class="date-time-pill" id="today-label">กำลังโหลดวันที่…</span><span class="date-time-separator">•</span><span class="date-time-pill" id="clock">--:--:-- น.</span></div>
+    </header>
 
-on:
-  workflow_dispatch:
-    inputs:
-      lottery_keys:
-        description: "ชื่อรายการ คั่นด้วย comma หรือเว้นว่างเพื่อดึงทั้ง 9 หน้า"
-        required: false
-        type: string
-        default: ""
-  schedule:
-    # ปลุกตัวตรวจกลางทุก 10 นาที ตัวตรวจจะเรียก ScrapingAnt เฉพาะรายการ
-    # ที่ถึงเวลาแล้วและยังไม่มีผลของงวดนั้นใน results.json
-    - cron: "*/10 * * * *"
+    <nav class="nav" id="nav" aria-label="หมวดผลรางวัล">
+      <button type="button" class="active" data-view="latest">ล่าสุด</button>
+      <button type="button" data-view="regional">ลาว–ฮานอย</button>
+      <button type="button" data-view="stocks">หวยหุ้น</button>
+      <button type="button" data-view="government">รัฐบาล</button>
+      <button type="button" data-view="history">ผลหวยย้อนหลัง</button>
+    </nav>
 
-permissions:
-  contents: write
+    <section class="view active" id="view-latest">
+      <div class="featured">
+        <div id="government-feature"></div>
+        <div id="lao-feature"></div>
+      </div>
+      <h2 class="section-title"><span class="section-icon" aria-hidden="true">🌏</span>ลาว–ฮานอยวันนี้</h2>
+      <div class="lottery-grid" id="regional-grid"></div>
+      <h2 class="section-title"><span class="section-icon" aria-hidden="true">📈</span>หวยหุ้นวันนี้</h2>
+      <div id="stock-list"></div>
+    </section>
 
-concurrency:
-  group: scrapingant-results
-  cancel-in-progress: false
+    <section class="view" id="view-government">
+      <h2 class="section-title"><span class="section-icon" aria-hidden="true">🏛️</span>หวยรัฐบาลไทย</h2>
+      <div id="government-full"></div>
+      <div class="history-box" id="government-history"></div>
+    </section>
 
-jobs:
-  scrape:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    <section class="view" id="view-regional">
+      <h2 class="section-title"><span class="section-icon" aria-hidden="true">🌏</span>ผลหวยลาว–ฮานอย</h2>
+      <div class="lottery-grid" id="regional-full"></div>
+      <div class="history-box" id="regional-history"></div>
+    </section>
 
-    steps:
-      - name: Download repository
-        uses: actions/checkout@v5
+    <section class="view" id="view-stocks">
+      <h2 class="section-title"><span class="section-icon" aria-hidden="true">📈</span>ผลหวยหุ้น</h2>
+      <div id="stock-full"></div>
+      <div class="history-box" id="stock-history"></div>
+    </section>
 
-      - name: Choose only the lottery that is due
-        id: choose
-        shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          MANUAL_KEYS: ${{ inputs.lottery_keys }}
-        run: |
-          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            echo "keys=$MANUAL_KEYS" >> "$GITHUB_OUTPUT"
-            echo "should_run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+    <section class="view" id="view-history">
+      <div class="history-box" id="all-history"></div>
+    </section>
 
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
-          import json
-          from datetime import datetime, timedelta
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
+    <p class="footer">ข้อมูลผลรางวัลใช้เพื่อการตรวจสอบเท่านั้น โปรดตรวจสอบกับแหล่งประกาศอย่างเป็นทางการอีกครั้ง</p>
+  </main>
 
-          now = datetime.now(ZoneInfo("Asia/Bangkok"))
-          today = now.date().isoformat()
-          weekday = now.weekday()
-          minute = now.hour * 60 + now.minute
-          path = Path("results.json")
-          data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-
-          def has_date(key, expected):
-              return any(
-                  isinstance(item, dict) and item.get("date") == expected
-                  for item in data.get(key, [])
-              )
-
-          due = []
-
-          # ดาวโจนส์ออกช่วงเช้าวันอังคาร-เสาร์ และเป็นงวดวันก่อนหน้า
-          if weekday in {1, 2, 3, 4, 5} and 210 <= minute <= 300:
-              expected = (now.date() - timedelta(days=1)).isoformat()
-              if not has_date("dow", expected):
-                  due.append("dow")
-
-          if weekday <= 4:
-              if 580 <= minute <= 779 and not has_date("nikkei_morning", today):
-                  due.append("nikkei_morning")
-              if 790 <= minute <= 900 and not has_date("nikkei_afternoon", today):
-                  due.append("nikkei_afternoon")
-              if 1015 <= minute <= 1110 and not has_date("thai_stock", today):
-                  due.append("thai_stock")
-              if 1240 <= minute <= 1320 and not has_date("lao", today):
-                  due.append("lao")
-
-          if now.day in {1, 16} and 970 <= minute <= 1080:
-              if not has_date("government", today):
-                  due.append("government")
-
-          daily_windows = {
-              "hanoi_special": (1060, 1140),
-              "hanoi_normal": (1120, 1200),
-              "hanoi_vip": (1180, 1260),
-          }
-          for key, (start, end) in daily_windows.items():
-              if start <= minute <= end and not has_date(key, today):
-                  due.append(key)
-
-          keys = ",".join(dict.fromkeys(due))
-          print(f"keys={keys}")
-          print(f"should_run={'true' if keys else 'false'}")
-          print(
-              f"notice=เวลาไทย {now:%Y-%m-%d %H:%M}; "
-              f"รายการที่ต้องดึง: {keys or 'ไม่มี'}"
-          )
-          PY
-
-      - name: Set up Python
-        if: steps.choose.outputs.should_run == 'true'
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install dependencies
-        if: steps.choose.outputs.should_run == 'true'
-        run: python -m pip install -r requirements.txt
-
-      - name: Scrape selected result with JavaScript
-        if: steps.choose.outputs.should_run == 'true'
-        env:
-          SCRAPINGANT_API_KEY: ${{ secrets.SCRAPINGANT_API_KEY }}
-          SCRAPINGANT_BROWSER: "true"
-          LOTTERY_KEYS: ${{ steps.choose.outputs.keys }}
-        run: python scrape_with_scrapingant.py
-
-      - name: Save results to GitHub
-        if: always() && steps.choose.outputs.should_run == 'true'
-        uses: actions/github-script@v9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          retries: 3
-          script: |
-            const fs = require("fs");
-            const path = "results.json";
-            const branch = context.ref.replace("refs/heads/", "");
-            const localContent = fs.readFileSync(path, "utf8");
-            const current = await github.rest.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path,
-              ref: branch
-            });
-            const remoteContent = Buffer.from(
-              current.data.content,
-              "base64"
-            ).toString("utf8");
-            if (localContent === remoteContent) {
-              core.info("No data changes");
-              return;
-            }
-            await github.rest.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path,
-              branch,
-              message: "chore: update selected lottery result",
-              content: Buffer.from(localContent).toString("base64"),
-              sha: current.data.sha
-            });
-            core.info("results.json updated successfully");
+  <script>
+    const githubPagesOwner=location.hostname.endsWith(".github.io")?location.hostname.split(".")[0]:"";
+    const githubPagesRepo=location.hostname.endsWith(".github.io")?location.pathname.split("/").filter(Boolean)[0]:"";
+    const DATA_URL=githubPagesOwner&&githubPagesRepo
+      ?`https://raw.githubusercontent.com/${githubPagesOwner}/${githubPagesRepo}/main/results.json`
+      :"./results.json";
+    const TYPES=[
+      {id:"government",name:"หวยรัฐบาลไทย",group:"government",icon:"🇹🇭",days:[1,16],hour:16,minute:0,color:"#ffc934"},
+      {id:"lao",name:"หวยลาวพัฒนา",group:"regional",icon:"🇱🇦",weekdays:[1,2,3,4,5],hour:20,minute:30,color:"#ec31af",six:true,top2:true},
+      {id:"hanoi_special",name:"ฮานอยพิเศษ",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:17,minute:30,color:"#8b5cff"},
+      {id:"hanoi_normal",name:"ฮานอยปกติ",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:18,minute:30,color:"#5f7dff"},
+      {id:"hanoi_vip",name:"ฮานอย VIP",group:"regional",icon:"🇻🇳",weekdays:[0,1,2,3,4,5,6],hour:19,minute:30,color:"#d23fd6"},
+      {id:"dow",name:"หุ้นดาวโจนส์",group:"stocks",icon:"🇺🇸",weekdays:[2,3,4,5,6],hour:3,minute:20,color:"#2ee0ad"},
+      {id:"nikkei_morning",name:"นิเคอิเช้า",group:"stocks",icon:"🇯🇵",weekdays:[1,2,3,4,5],hour:9,minute:30,color:"#2eb8ff"},
+      {id:"nikkei_afternoon",name:"นิเคอิบ่าย",group:"stocks",icon:"🇯🇵",weekdays:[1,2,3,4,5],hour:13,minute:0,color:"#ff9f2e"},
+      {id:"thai_stock",name:"หุ้นไทยเย็น",group:"stocks",icon:"🇹🇭",weekdays:[1,2,3,4,5],hour:16,minute:45,color:"#ad42ed"}
+    ];
+    let DATA={};let historyType="government";let historyMonth="all";
+    const $=s=>document.querySelector(s);
+    const pad=n=>String(n).padStart(2,"0");
+    const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    function bangkokParts(date=new Date()){return Object.fromEntries(new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Bangkok",year:"numeric",month:"numeric",day:"numeric",weekday:"short",hour:"numeric",minute:"numeric",second:"numeric",hourCycle:"h23"}).formatToParts(date).filter(x=>x.type!=="literal").map(x=>[x.type,x.value]))}
+    function todayIso(){const p=bangkokParts();return`${p.year}-${pad(p.month)}-${pad(p.day)}`}
+    function thaiDate(iso,long=false){if(!iso)return"ยังไม่มีข้อมูล";const [y,m,d]=iso.split("-").map(Number);return new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:long?"long":"short",day:"numeric",month:long?"long":"numeric",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)))}
+    function historyShortDate(iso){if(!iso)return"-";const [y,m,d]=iso.split("-").map(Number),days=["อา","จ","อ","พ","พฤ","ศ","ส"],date=new Date(Date.UTC(y,m-1,d,5)),be=(y+543)%100;return`${days[date.getUTCDay()]} ${pad(d)}/${pad(m)}/${pad(be)}`}
+    function latest(id){return [...(DATA[id]||[])].sort((a,b)=>(b.date+(b.time||"")).localeCompare(a.date+(a.time||"")))[0]}
+    function resultTimestamp(t,item){if(!item?.date)return 0;const [y,m,d]=item.date.split("-").map(Number);return Date.UTC(y,m-1,d,t.hour-7,t.minute)}
+    function sortTypesByLatest(types){return [...types].sort((a,b)=>resultTimestamp(b,latest(b.id))-resultTimestamp(a,latest(a.id)))}
+    function ageInDays(item){if(!item?.date)return Infinity;const p=bangkokParts();const today=Date.UTC(+p.year,+p.month-1,+p.day);const [y,m,d]=item.date.split("-").map(Number);return Math.floor((today-Date.UTC(y,m-1,d))/86400000)}
+    function drawTimestamp(t,p){let y=+p.year,m=+p.month,d=+p.day;if(t.days&&!t.days.includes(d))return null;return Date.UTC(y,m-1,d,t.hour-7,t.minute)}
+    function expectedDrawDate(t,p){const base=Date.UTC(+p.year,+p.month-1,+p.day);const date=new Date(t.id==="dow"?base-86400000:base);return`${date.getUTCFullYear()}-${pad(date.getUTCMonth()+1)}-${pad(date.getUTCDate())}`}
+    function stateFor(t,item){const p=bangkokParts();const expectedDate=expectedDrawDate(t,p);let target=drawTimestamp(t,p);if(t.weekdays){const wd=new Date(Date.UTC(+p.year,+p.month-1,+p.day)).getUTCDay();if(!t.weekdays.includes(wd))target=null}const now=Date.now();if(item&&item.date===expectedDate)return{waiting:false,text:"ออกผลแล้ว"};if(target&&now>=target)return{waiting:true,text:"กำลังอัปเดตผล"};if(target&&target-now<=5*3600000)return{waiting:true,text:`รอออกผล ${countdown(target-now)}`,target};return item?{waiting:false,text:"ออกผลแล้ว"}:{waiting:true,text:"รอผล"}}
+    function countdown(ms){const s=Math.max(0,Math.floor(ms/1000));return`${pad(Math.floor(s/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`}
+    function statusHtml(state){return`<span class="status ${state.waiting?"wait":"out"}"${state.target?` data-countdown-target="${state.target}"`:""}><i class="status-dot"></i><span class="status-text">${esc(state.text)}</span></span>`}
+    function updateCountdowns(){document.querySelectorAll("[data-countdown-target]").forEach(el=>{const target=Number(el.dataset.countdownTarget),remaining=target-Date.now(),text=el.querySelector(".status-text");if(!text)return;if(remaining<=0){text.textContent="กำลังอัปเดตผล";el.removeAttribute("data-countdown-target")}else{text.textContent=`รอออกผล ${countdown(remaining)}`}})}
+    function hero(t,item,kind=t.id){const s=stateFor(t,item),shown=s.waiting?null:item,drawDate=s.waiting?todayIso():item?.date,main=shown?.main||"------",top3=shown?.top3||"---",bottom=shown?.bottom2||"--",top2=shown?main.slice(-2):"--",showTop2=t.top2||t.id==="government",label=t.id==="lao"?"":`<div class="result-label">${t.id==="government"?"รางวัลที่ 1":"ผลรางวัล"}</div>`;return`<article class="hero-card ${kind}"><div class="card-head"><div class="identity"><div class="symbol">${t.icon}</div><div><h2>${esc(t.name)}</h2><div class="date-line">งวดวันที่ ${thaiDate(drawDate||"",true)}</div></div></div>${statusHtml(s)}</div><div class="result-main">${label}<div class="big-number">${esc(main)}</div></div><div class="breakdown"><div><span>3 ตัวบน</span><strong>${esc(top3)}</strong></div>${showTop2?`<div><span>2 ตัวบน</span><strong>${esc(top2)}</strong></div>`:""}<div><span>2 ตัวล่าง</span><strong>${esc(bottom)}</strong></div></div></article>`}
+    function mini(t,item){const s=stateFor(t,item),shown=s.waiting?null:item,drawDate=s.waiting?todayIso():item?.date,main=shown?.main||"-----";return`<article class="mini-card" style="border-top:3px solid ${t.color}"><div class="mini-top"><div><div class="mini-name">${t.icon} ${esc(t.name)}</div><div class="mini-tag">${thaiDate(drawDate||"")} · ${pad(t.hour)}:${pad(t.minute)} น.</div></div>${statusHtml(s)}</div><div class="mini-number">${esc(main)}</div><div class="mini-breakdown"><div><span>3 ตัวบน</span><strong>${esc(shown?.top3||"---")}</strong></div>${t.top2?`<div><span>2 ตัวบน</span><strong>${esc(shown?main.slice(-2):"--")}</strong></div>`:""}<div><span>2 ตัวล่าง</span><strong>${esc(shown?.bottom2||"--")}</strong></div></div></article>`}
+    function stocksMarkup(){const stockTypes=sortTypesByLatest(TYPES.filter(t=>t.group==="stocks"));return`<div class="stock-panel"><div class="stock-header"><span>ประเภท</span><span>เวลาออก</span><span>สถานะ</span><span aria-hidden="true"></span><span>3 ตัวบน</span><span>2 ตัวล่าง</span></div>${stockTypes.map(t=>{const i=latest(t.id),s=stateFor(t,i),shown=s.waiting?null:i;return`<div class="stock-row" style="--accent:${t.color}"><div class="stock-name"><span class="flag">${t.icon}</span>${esc(t.name)}</div><div class="stock-cell stock-time"><span class="mobile-label">เวลาออก</span><strong>${pad(t.hour)}:${pad(t.minute)} น.</strong></div><div class="stock-cell stock-status"><span class="mobile-label">สถานะ</span>${statusHtml(s)}</div><div class="stock-cell stock-main-cell"><div class="stock-main">${esc(shown?.main||"-----")}</div></div><div class="stock-cell"><span class="mobile-label">3 ตัวบน</span><div class="stock-value">${esc(shown?.top3||"---")}</div></div><div class="stock-cell"><span class="mobile-label">2 ตัวล่าง</span><div class="stock-value">${esc(shown?.bottom2||"--")}</div></div></div>`}).join("")}</div>`}
+    function monthLabel(month){return new Intl.DateTimeFormat("th-TH",{month:"long",year:"numeric"}).format(new Date(`${month}-01T12:00:00+07:00`))}
+    function historyMarkup(title,allowedIds=TYPES.map(t=>t.id)){const chosen=allowedIds.includes(historyType)?historyType:allowedIds[0];historyType=chosen;const t=TYPES.find(x=>x.id===chosen),list=[...(DATA[chosen]||[])].sort((a,b)=>b.date.localeCompare(a.date)),months=[...new Set(list.map(x=>x.date.slice(0,7)))],historyIcon=allowedIds.length===TYPES.length?"🕘":allowedIds.includes("government")?"🏛️":allowedIds.includes("dow")?"📈":"🌏";if(historyMonth!=="all"&&!months.includes(historyMonth))historyMonth="all";const filtered=historyMonth==="all"?list:list.filter(x=>x.date.startsWith(historyMonth)),rows=filtered.map(x=>`<tr><td>${historyShortDate(x.date)}</td><td class="number">${esc(x.main)}</td><td class="number">${esc(x.top3)}</td>${t.top2?`<td class="number">${esc(String(x.main).slice(-2))}</td>`:""}<td class="number">${esc(x.bottom2)}</td></tr>`).join("");return`<div class="history-head"><h2><span class="section-icon" aria-hidden="true">${historyIcon}</span>${esc(title)}</h2><div class="history-controls"><select id="history-type">${allowedIds.map(id=>{const x=TYPES.find(t=>t.id===id);return`<option value="${id}" ${id===chosen?"selected":""}>${esc(x.name)}</option>`}).join("")}</select><select id="history-month"><option value="all">ทุกเดือน</option>${months.map(m=>`<option value="${m}" ${m===historyMonth?"selected":""}>${monthLabel(m)}</option>`).join("")}</select></div></div>${rows?`<div class="table-shell"><div class="table-swipe-guide"><span class="swipe-arrows">↔</span>ปัดตารางเพื่อดูผลเพิ่มเติม</div><div class="scroll-cue left hidden" aria-hidden="true"></div><div class="table-wrap"><table><thead><tr><th>วันที่</th><th>เลขหลัก</th><th>3 ตัวบน</th>${t.top2?"<th>2 ตัวบน</th>":""}<th>2 ตัวล่าง</th></tr></thead><tbody>${rows}</tbody></table></div><div class="scroll-cue right" aria-hidden="true"></div></div>`:`<div class="empty">ยังไม่มีผลหวยย้อนหลังประเภทนี้</div>`}`}
+    function bindTableGuide(container){const shell=container.querySelector(".table-shell"),wrap=container.querySelector(".table-wrap"),left=container.querySelector(".scroll-cue.left"),right=container.querySelector(".scroll-cue.right");if(!shell||!wrap||!left||!right)return;const update=()=>{const max=Math.max(0,wrap.scrollWidth-wrap.clientWidth),atLeft=wrap.scrollLeft<=2,atRight=wrap.scrollLeft>=max-2;left.classList.toggle("hidden",atLeft||max===0);right.classList.toggle("hidden",atRight||max===0)};wrap.addEventListener("scroll",()=>{if(Math.abs(wrap.scrollLeft)>2)shell.classList.add("was-scrolled");update()},{passive:true});update()}
+    function bindHistory(container,allowed,title){container.querySelector("#history-type")?.addEventListener("change",e=>{historyType=e.target.value;historyMonth="all";container.innerHTML=historyMarkup(title,allowed);bindHistory(container,allowed,title)});container.querySelector("#history-month")?.addEventListener("change",e=>{historyMonth=e.target.value;container.innerHTML=historyMarkup(title,allowed);bindHistory(container,allowed,title)});bindTableGuide(container)}
+    function render(){const government=TYPES[0],lao=TYPES[1],regional=TYPES.filter(t=>t.group==="regional"),stocks=TYPES.filter(t=>t.group==="stocks"),governmentItem=latest("government"),laoItem=latest("lao"),showGovernment=ageInDays(governmentItem)<=3,governmentFeature=$("#government-feature"),laoFeature=$("#lao-feature"),featured=document.querySelector(".featured");governmentFeature.classList.toggle("hide",!showGovernment);governmentFeature.innerHTML=showGovernment?hero(government,governmentItem,"government"):"";laoFeature.innerHTML=hero(lao,laoItem,"lao");featured.classList.toggle("single",!showGovernment);if(showGovernment){const governmentFirst=resultTimestamp(government,governmentItem)>=resultTimestamp(lao,laoItem);governmentFeature.style.order=governmentFirst?"0":"1";laoFeature.style.order=governmentFirst?"1":"0"}else{laoFeature.style.order="0"}const sortedRegional=sortTypesByLatest(regional.filter(t=>t.id!=="lao"));$("#regional-grid").innerHTML=sortedRegional.map(t=>mini(t,latest(t.id))).join("");$("#stock-list").innerHTML=stocksMarkup();$("#government-full").innerHTML=hero(government,governmentItem,"government");$("#regional-full").innerHTML=sortTypesByLatest(regional).map(t=>mini(t,latest(t.id))).join("");$("#stock-full").innerHTML=stocksMarkup();const groups=[["#government-history",["government"],"ผลหวยรัฐบาลไทยย้อนหลัง"],["#regional-history",regional.map(t=>t.id),"ผลหวยลาว–ฮานอยย้อนหลัง"],["#stock-history",stocks.map(t=>t.id),"ผลหวยหุ้นย้อนหลัง"],["#all-history",TYPES.map(t=>t.id),"ผลหวยย้อนหลัง"]];groups.forEach(([sel,ids,title])=>{const el=$(sel);el.innerHTML=historyMarkup(title,ids);bindHistory(el,ids,title)})}
+    async function load(){try{const r=await fetch(`${DATA_URL}?_=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw Error(r.status);DATA=await r.json();render()}catch(e){document.querySelectorAll(".view").forEach(v=>v.classList.add("loading"));$("#view-latest").insertAdjacentHTML("afterbegin",`<div class="empty">โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>`)}}
+    function updateClock(){const p=bangkokParts();const y=+p.year,m=+p.month,d=+p.day;$("#today-label").textContent=new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)));$("#clock").textContent=`${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)} น.`;updateCountdowns()}
+    function switchView(button){const view=document.getElementById(`view-${button.dataset.view}`);if(!view)return;document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v===view));window.scrollTo({top:0,behavior:"smooth"})}
+    document.querySelectorAll("#nav button[data-view]").forEach(button=>button.addEventListener("click",()=>switchView(button)));
+    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);
+  </script>
+</body>
+</html>
