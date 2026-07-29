@@ -20,7 +20,7 @@
   "hanoi_special": [
     {
       "date": "2026-07-28",
-      "time": "18:22",
+      "time": "19:15",
       "status": "out",
       "main": "85272",
       "top3": "272",
@@ -36,6 +36,14 @@
     }
   ],
   "hanoi_normal": [
+    {
+      "date": "2026-07-29",
+      "time": "19:15",
+      "status": "out",
+      "main": "39983",
+      "top3": "983",
+      "bottom2": "68"
+    },
     {
       "date": "2026-07-28",
       "time": "21:50",
@@ -75,11 +83,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_afternoon"
+      "hanoi_special",
+      "hanoi_normal"
     ],
-    "last_run": "2026-07-29T18:47:50+07:00",
+    "last_run": "2026-07-29T19:15:53+07:00",
     "updated": [
-      "nikkei_afternoon"
+      "hanoi_special",
+      "hanoi_normal"
     ],
     "errors": {}
   },
