@@ -64,7 +64,7 @@
   "hanoi_vip": [
     {
       "date": "2026-07-29",
-      "time": "19:57",
+      "time": "20:01",
       "status": "out",
       "main": "19787",
       "top3": "787",
@@ -93,7 +93,7 @@
     "requested": [
       "hanoi_vip"
     ],
-    "last_run": "2026-07-29T19:57:28+07:00",
+    "last_run": "2026-07-29T20:01:27+07:00",
     "updated": [
       "hanoi_vip"
     ],
