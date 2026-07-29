@@ -19,8 +19,8 @@
   ],
   "hanoi_special": [
     {
-      "date": "2026-07-28",
-      "time": "19:15",
+      "date": "2026-07-29",
+      "time": "19:28",
       "status": "out",
       "main": "85272",
       "top3": "272",
@@ -83,13 +83,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_special",
-      "hanoi_normal"
+      "hanoi_special"
     ],
-    "last_run": "2026-07-29T19:15:53+07:00",
+    "last_run": "2026-07-29T19:28:04+07:00",
     "updated": [
-      "hanoi_special",
-      "hanoi_normal"
+      "hanoi_special"
     ],
     "errors": {}
   },
