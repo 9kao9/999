@@ -8,6 +8,12 @@ on:
         required: false
         type: string
         default: ""
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/scrapingant-production.yml"
+      - "scrape_with_scrapingant.py"
   schedule:
     # ปลุกตัวตรวจกลางทุก 5 นาที ตัวตรวจจะเรียก ScrapingAnt เฉพาะรายการ
     # ที่ถึงเวลาแล้วและยังไม่มีผลของงวดนั้นใน results.json
