@@ -191,13 +191,17 @@ def normalize_result(key: str, numbers: list[str]) -> tuple[str, str, str]:
 def correct_dow_draw_date(
     draw_date: str,
     now: datetime,
+    numbers_changed: bool = True,
 ) -> str:
     """Correct ExpHuay's occasional one-day-stale DJI heading.
 
     The Dow result shown early Tuesday-Saturday Thailand time belongs to the
     previous calendar day. Sunday and Monday are intentionally excluded.
     """
-    if now.weekday() not in {1, 2, 3, 4, 5}:
+    if (
+        not numbers_changed
+        or now.weekday() not in {1, 2, 3, 4, 5}
+    ):
         return draw_date
 
     expected = (now.date() - timedelta(days=1)).isoformat()
@@ -213,13 +217,18 @@ def correct_dow_draw_date(
 def correct_nikkei_morning_draw_date(
     draw_date: str,
     now: datetime,
+    numbers_changed: bool = True,
 ) -> str:
     """Use today's date when today's Nikkei morning result is already out.
 
     ExpHuay can briefly return the new result numbers with the previous date
     still present in the rendered heading.
     """
-    if now.weekday() > 4 or (now.hour, now.minute) < (9, 30):
+    if (
+        not numbers_changed
+        or now.weekday() > 4
+        or (now.hour, now.minute) < (9, 30)
+    ):
         return draw_date
 
     expected = now.date().isoformat()
@@ -236,9 +245,14 @@ def correct_nikkei_morning_draw_date(
 def correct_nikkei_afternoon_draw_date(
     draw_date: str,
     now: datetime,
+    numbers_changed: bool = True,
 ) -> str:
     """Use today's date after the weekday Nikkei afternoon draw."""
-    if now.weekday() > 4 or (now.hour, now.minute) < (13, 0):
+    if (
+        not numbers_changed
+        or now.weekday() > 4
+        or (now.hour, now.minute) < (13, 0)
+    ):
         return draw_date
 
     expected = now.date().isoformat()
@@ -246,6 +260,86 @@ def correct_nikkei_afternoon_draw_date(
         print(
             "[nikkei_afternoon] แก้วันที่งวดจาก "
             f"{draw_date} เป็น {expected} "
+            f"(เวลาประเทศไทย {now:%Y-%m-%d %H:%M})"
+        )
+        return expected
+    return draw_date
+
+
+SAME_DAY_DRAW_RULES = {
+    "government": ((16, 0), {0, 1, 2, 3, 4, 5, 6}),
+    "lao": ((20, 30), {0, 1, 2, 3, 4}),
+    "hanoi_special": ((17, 30), {0, 1, 2, 3, 4, 5, 6}),
+    "hanoi_normal": ((18, 30), {0, 1, 2, 3, 4, 5, 6}),
+    "hanoi_vip": ((19, 30), {0, 1, 2, 3, 4, 5, 6}),
+    "thai_stock": ((16, 45), {0, 1, 2, 3, 4}),
+}
+
+
+def result_differs_from_latest(
+    entries: list[dict],
+    main: str,
+    top3: str,
+    bottom2: str,
+) -> bool:
+    """Return True only when the scraped numbers differ from stored latest."""
+    if not entries:
+        return True
+    latest = max(
+        entries,
+        key=lambda entry: (
+            entry.get("date", ""),
+            entry.get("time", ""),
+        ),
+    )
+    return (
+        latest.get("main"),
+        latest.get("top3"),
+        latest.get("bottom2"),
+    ) != (main, top3, bottom2)
+
+
+def was_updated_today(
+    data: dict,
+    key: str,
+    now: datetime,
+) -> bool:
+    """Recognize a new result saved under yesterday by an older script."""
+    meta = data.get("_meta", {})
+    if key not in meta.get("updated", []):
+        return False
+    try:
+        last_run = datetime.fromisoformat(meta.get("last_run", ""))
+    except (TypeError, ValueError):
+        return False
+    return last_run.astimezone(THAI_TZ).date() == now.date()
+
+
+def correct_same_day_draw_date(
+    key: str,
+    draw_date: str,
+    now: datetime,
+    numbers_changed: bool,
+) -> str:
+    """Correct a stale heading only after draw time and with new numbers."""
+    rule = SAME_DAY_DRAW_RULES.get(key)
+    if not rule or not numbers_changed:
+        return draw_date
+
+    draw_time, allowed_weekdays = rule
+    if (
+        now.weekday() not in allowed_weekdays
+        or (now.hour, now.minute) < draw_time
+    ):
+        return draw_date
+    if key == "government" and now.day not in {1, 16}:
+        return draw_date
+
+    expected = now.date().isoformat()
+    if draw_date < expected:
+        print(
+            f"[{key}] แก้วันที่งวดจาก {draw_date} เป็น {expected} "
+            f"เพราะเลขเปลี่ยนจากงวดเดิม "
             f"(เวลาประเทศไทย {now:%Y-%m-%d %H:%M})"
         )
         return expected
@@ -376,8 +470,18 @@ def main() -> int:
                 )
             draw_date = extract_draw_date(soup, now)
             main_number, top3, bottom2 = normalize_result(key, numbers)
+            numbers_changed = result_differs_from_latest(
+                data[key],
+                main_number,
+                top3,
+                bottom2,
+            ) or was_updated_today(data, key, now)
             if key == "dow":
-                draw_date = correct_dow_draw_date(draw_date, now)
+                draw_date = correct_dow_draw_date(
+                    draw_date,
+                    now,
+                    numbers_changed,
+                )
                 data[key] = remove_recent_duplicate_result(
                     data[key],
                     draw_date,
@@ -386,7 +490,11 @@ def main() -> int:
                     bottom2,
                 )
             elif key == "nikkei_morning":
-                draw_date = correct_nikkei_morning_draw_date(draw_date, now)
+                draw_date = correct_nikkei_morning_draw_date(
+                    draw_date,
+                    now,
+                    numbers_changed,
+                )
                 data[key] = remove_recent_duplicate_result(
                     data[key],
                     draw_date,
@@ -395,7 +503,25 @@ def main() -> int:
                     bottom2,
                 )
             elif key == "nikkei_afternoon":
-                draw_date = correct_nikkei_afternoon_draw_date(draw_date, now)
+                draw_date = correct_nikkei_afternoon_draw_date(
+                    draw_date,
+                    now,
+                    numbers_changed,
+                )
+                data[key] = remove_recent_duplicate_result(
+                    data[key],
+                    draw_date,
+                    main_number,
+                    top3,
+                    bottom2,
+                )
+            elif key in SAME_DAY_DRAW_RULES:
+                draw_date = correct_same_day_draw_date(
+                    key,
+                    draw_date,
+                    now,
+                    numbers_changed,
+                )
                 data[key] = remove_recent_duplicate_result(
                     data[key],
                     draw_date,
