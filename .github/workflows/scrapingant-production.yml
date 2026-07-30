@@ -23,9 +23,9 @@ on:
       - ".github/workflows/scrapingant-scheduler.yml"
       - "scrape_with_scrapingant.py"
   schedule:
-    # ปลุกตัวตรวจกลางทุก 5 นาที ตัวตรวจจะเรียก ScrapingAnt เฉพาะรายการ
-    # ที่ถึงเวลาแล้วและยังไม่มีผลของงวดนั้นใน results.json
-    - cron: "*/5 * * * *"
+    # รอบสำรอง: เลี่ยงนาที 00 ซึ่งเป็นช่วงที่ GitHub Actions หนาแน่น
+    # ScrapingAnt จะถูกเรียกเฉพาะรายการที่ถึงเวลาและยังไม่มีผลเท่านั้น
+    - cron: "4-59/5 * * * *"
 
 permissions:
   contents: write
@@ -86,7 +86,9 @@ jobs:
                   due.append("dow")
 
           if weekday <= 4:
-              if 573 <= minute <= 779 and not has_date("nikkei_morning", today):
+              # เปิดช่วงติดตามต่อถึง 18:00 น. เผื่อ GitHub เลื่อนหรือข้าม
+              # scheduled run หลังเวลาออก โดยไม่เสียเครดิตเมื่อมีผลแล้ว
+              if 573 <= minute <= 1080 and not has_date("nikkei_morning", today):
                   due.append("nikkei_morning")
               if 783 <= minute <= 900 and not has_date("nikkei_afternoon", today):
                   due.append("nikkei_afternoon")
