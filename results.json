@@ -139,11 +139,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-07-30T20:35:44+07:00",
+    "last_run": "2026-07-31T03:25:42+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -166,6 +166,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-07-30",
+      "time": "03:25",
+      "status": "out",
+      "main": "80692",
+      "top3": "806",
+      "bottom2": "92"
+    },
     {
       "date": "2026-07-29",
       "time": "03:28",
