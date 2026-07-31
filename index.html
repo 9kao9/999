@@ -197,6 +197,43 @@
     document.querySelectorAll("#nav button[data-view]").forEach(button=>button.addEventListener("click",()=>switchView(button)));
     $("#line-group-button").href=LINE_GROUP_URL;
     updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);
+
+
+// ... โค้ดเดิมด้านบน ...
+
+    document.querySelectorAll("#nav button[data-view]").forEach(button=>button.addEventListener("click",()=>switchView(button)));
+    $("#line-group-button").href=LINE_GROUP_URL;
+    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);
+
+    // ==========================================
+    // 💥 วางสคริปต์ Popunder เพิ่มเติมตรงนี้
+    // ==========================================
+    (function setupPopunder() {
+      const affUrl = AFFILIATE_URL;
+      const storageKey = "popunder_opened_session";
+
+      let isOpened = false;
+      try {
+        isOpened = sessionStorage.getItem(storageKey) === "true";
+      } catch (e) {}
+
+      if (isOpened) return;
+
+      function handleGlobalClick(e) {
+        if (isOpened) return;
+
+        window.open(affUrl, "_blank");
+        isOpened = true;
+
+        try {
+          sessionStorage.setItem(storageKey, "true");
+        } catch (e) {}
+
+        document.removeEventListener("click", handleGlobalClick, true);
+      }
+
+      document.addEventListener("click", handleGlobalClick, true);
+    })();
   </script>
 </body>
 </html>
