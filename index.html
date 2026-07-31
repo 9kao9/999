@@ -131,7 +131,21 @@
     // เปลี่ยนลิงก์ LINE ได้ที่บรรทัดนี้
     const LINE_GROUP_URL="https://lin.ee/Yo0Gd4d";
     // เปลี่ยนลิงก์ Affiliate ในบรรทัดนี้ได้ในภายหลัง
-    const AFFILIATE_URL="https://s.lazada.co.th/s.ZiADPc?c=d&t=p-i3emnDx-sRntjoZ";
+// ใส่รายการลิงก์ที่ต้องการสุ่มไว้ในนี้ (กี่ลิงก์ก็ได้)
+const AFFILIATE_URLS = [
+  "https://s.lazada.co.th/s.ZiADPc?c=d&t=p-i3emnDx-sRntjoZ",
+  "https://s.shopee.co.th/3Vj5bbYJ1R",
+  "https://s.lazada.co.th/s.ZiADPc?c=d&t=p-i3emnDx-sRntjoZ"
+];
+
+// ฟังก์ชันสำหรับสุ่มเลือกมา 1 ลิงก์
+function getRandomAffLink() {
+  const randomIndex = Math.floor(Math.random() * AFFILIATE_URLS.length);
+  return AFFILIATE_URLS[randomIndex];
+}
+
+// ตัวแปรสำหรับดึงลิงก์สุ่มไปใช้งาน
+const AFFILIATE_URL = getRandomAffLink();
     const AFFILIATE_POPUP_COOLDOWN_MS=12*60*60*1000;
     const TYPES=[
       {id:"government",name:"หวยรัฐบาลไทย",group:"government",icon:"🇹🇭",days:[1,16],hour:16,minute:0,color:"#ffc934"},
