@@ -139,11 +139,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_afternoon"
+      "thai_stock"
     ],
-    "last_run": "2026-07-31T13:10:44+07:00",
+    "last_run": "2026-07-31T16:50:46+07:00",
     "updated": [
-      "nikkei_afternoon"
+      "thai_stock"
     ],
     "errors": {}
   },
@@ -276,6 +276,14 @@
     }
   ],
   "thai_stock": [
+    {
+      "date": "2026-07-31",
+      "time": "16:50",
+      "status": "out",
+      "main": "46453",
+      "top3": "464",
+      "bottom2": "53"
+    },
     {
       "date": "2026-07-30",
       "time": "18:06",
