@@ -131,21 +131,7 @@
     // เปลี่ยนลิงก์ LINE ได้ที่บรรทัดนี้
     const LINE_GROUP_URL="https://lin.ee/Yo0Gd4d";
     // เปลี่ยนลิงก์ Affiliate ในบรรทัดนี้ได้ในภายหลัง
-// ใส่รายการลิงก์ที่ต้องการสุ่มไว้ในนี้ (กี่ลิงก์ก็ได้)
-const AFFILIATE_URLS = [
-  "https://s.lazada.co.th/s.ZiADPc?c=d&t=p-i3emnDx-sRntjoZ",
-  "https://s.shopee.co.th/3Vj5bbYJ1R",
-  "https://s.lazada.co.th/s.ZiADPc?c=d&t=p-i3emnDx-sRntjoZ"
-];
-
-// ฟังก์ชันสำหรับสุ่มเลือกมา 1 ลิงก์
-function getRandomAffLink() {
-  const randomIndex = Math.floor(Math.random() * AFFILIATE_URLS.length);
-  return AFFILIATE_URLS[randomIndex];
-}
-
-// ตัวแปรสำหรับดึงลิงก์สุ่มไปใช้งาน
-const AFFILIATE_URL = getRandomAffLink();
+    const AFFILIATE_URL="https://s.lazada.co.th/s.ZiADPc?c=d&t=p-i3emnDx-sRntjoZ";
     const AFFILIATE_POPUP_COOLDOWN_MS=12*60*60*1000;
     const TYPES=[
       {id:"government",name:"หวยรัฐบาลไทย",group:"government",icon:"🇹🇭",days:[1,16],hour:16,minute:0,color:"#ffc934"},
@@ -158,7 +144,7 @@ const AFFILIATE_URL = getRandomAffLink();
       {id:"nikkei_afternoon",name:"นิเคอิบ่าย",group:"stocks",icon:"🇯🇵",weekdays:[1,2,3,4,5],hour:13,minute:0,color:"#ff9f2e"},
       {id:"thai_stock",name:"หุ้นไทยเย็น",group:"stocks",icon:"🇹🇭",weekdays:[1,2,3,4,5],hour:16,minute:45,color:"#ad42ed"}
     ];
-    let DATA={};let historyType="government";let historyMonth="all";
+    let DATA={};let historyType="government";let historyMonth="all";let lastPriorityMinute=-1;
     const $=s=>document.querySelector(s);
     const pad=n=>String(n).padStart(2,"0");
     const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
@@ -167,28 +153,31 @@ const AFFILIATE_URL = getRandomAffLink();
     function thaiDate(iso,long=false){if(!iso)return"ยังไม่มีข้อมูล";const [y,m,d]=iso.split("-").map(Number);return new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:long?"long":"short",day:"numeric",month:long?"long":"numeric",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)))}
     function historyShortDate(iso){if(!iso)return"-";const [y,m,d]=iso.split("-").map(Number),days=["อา","จ","อ","พ","พฤ","ศ","ส"],date=new Date(Date.UTC(y,m-1,d,5)),be=(y+543)%100;return`${days[date.getUTCDay()]} ${pad(d)}/${pad(m)}/${pad(be)}`}
     function latest(id){return [...(DATA[id]||[])].sort((a,b)=>(b.date+(b.time||"")).localeCompare(a.date+(a.time||"")))[0]}
-    function resultTimestamp(t,item){if(!item?.date)return 0;const [y,m,d]=item.date.split("-").map(Number);return Date.UTC(y,m-1,d,t.hour-7,t.minute)}
+    const WAITING_WINDOW_MS=60*60*1000;
+    function resultTimestamp(t,item){if(!item?.date)return 0;const [y,m,d]=item.date.split("-").map(Number),dowDateShift=t.id==="dow"?86400000:0;return Date.UTC(y,m-1,d,t.hour-7,t.minute)+dowDateShift}
     function sortTypesByLatest(types){return [...types].sort((a,b)=>resultTimestamp(b,latest(b.id))-resultTimestamp(a,latest(a.id)))}
     function scheduledOn(t,date){const day=date.getUTCDate(),weekday=date.getUTCDay();return(!t.days||t.days.includes(day))&&(!t.weekdays||t.weekdays.includes(weekday))}
-    function upcomingScore(t){const p=bangkokParts(),now=Date.now(),today=Date.UTC(+p.year,+p.month-1,+p.day),item=latest(t.id);for(let offset=0;offset<40;offset++){const date=new Date(today+offset*86400000);if(!scheduledOn(t,date))continue;const target=Date.UTC(date.getUTCFullYear(),date.getUTCMonth(),date.getUTCDate(),t.hour-7,t.minute),iso=`${date.getUTCFullYear()}-${pad(date.getUTCMonth()+1)}-${pad(date.getUTCDate())}`,expected=t.id==="dow"?new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth(),date.getUTCDate())-86400000).toISOString().slice(0,10):iso;if(offset===0&&target<=now&&item?.date!==expected)return target;if(target>now)return target}return Number.MAX_SAFE_INTEGER}
-    function sortTypesByUpcoming(types){return [...types].sort((a,b)=>upcomingScore(a)-upcomingScore(b))}
+    function priorityFor(t){const item=latest(t.id),state=stateFor(t,item);return{active:!!(state.waiting&&state.target),overdue:!!state.overdue,target:state.target||0,latest:resultTimestamp(t,item)}}
+    function compareTypes(a,b){const x=priorityFor(a),y=priorityFor(b);if(x.active!==y.active)return x.active?-1:1;if(x.active&&y.active){if(x.overdue!==y.overdue)return x.overdue?-1:1;if(x.overdue&&y.overdue)return y.target-x.target;return x.target-y.target}return y.latest-x.latest}
+    function sortTypesByPriority(types){return [...types].sort(compareTypes)}
+    function compareGroups(a,b){return compareTypes(sortTypesByPriority(a.types)[0],sortTypesByPriority(b.types)[0])}
     function ageInDays(item){if(!item?.date)return Infinity;const p=bangkokParts();const today=Date.UTC(+p.year,+p.month-1,+p.day);const [y,m,d]=item.date.split("-").map(Number);return Math.floor((today-Date.UTC(y,m-1,d))/86400000)}
     function drawTimestamp(t,p){let y=+p.year,m=+p.month,d=+p.day;if(t.days&&!t.days.includes(d))return null;return Date.UTC(y,m-1,d,t.hour-7,t.minute)}
     function expectedDrawDate(t,p){const base=Date.UTC(+p.year,+p.month-1,+p.day);const date=new Date(t.id==="dow"?base-86400000:base);return`${date.getUTCFullYear()}-${pad(date.getUTCMonth()+1)}-${pad(date.getUTCDate())}`}
-    function stateFor(t,item){const p=bangkokParts();const expectedDate=expectedDrawDate(t,p);let target=drawTimestamp(t,p);if(t.weekdays){const wd=new Date(Date.UTC(+p.year,+p.month-1,+p.day)).getUTCDay();if(!t.weekdays.includes(wd))target=null}const now=Date.now();if(item&&item.date===expectedDate)return{waiting:false,text:"ออกผลแล้ว"};if(target&&now>=target)return{waiting:true,text:"กำลังอัปเดตผล"};if(target&&target-now<=5*3600000)return{waiting:true,text:`รอออกผล ${countdown(target-now)}`,target};return item?{waiting:false,text:"ออกผลแล้ว"}:{waiting:true,text:"รอผล"}}
+    function stateFor(t,item){const p=bangkokParts();const expectedDate=expectedDrawDate(t,p);let target=drawTimestamp(t,p);if(t.weekdays){const wd=new Date(Date.UTC(+p.year,+p.month-1,+p.day)).getUTCDay();if(!t.weekdays.includes(wd))target=null}const now=Date.now();if(item&&item.date===expectedDate)return{waiting:false,text:"ออกผลแล้ว"};if(target&&now>=target)return{waiting:true,text:"กำลังอัปเดตผล",target,overdue:true};if(target&&target-now<=WAITING_WINDOW_MS)return{waiting:true,text:`รอออกผล ${countdown(target-now)}`,target};return item?{waiting:false,text:"ออกผลแล้ว"}:{waiting:true,text:"รอผล"}}
     function countdown(ms){const s=Math.max(0,Math.floor(ms/1000));return`${pad(Math.floor(s/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`}
     function statusHtml(state){return`<span class="status ${state.waiting?"wait":"out"}"${state.target?` data-countdown-target="${state.target}"`:""}><i class="status-dot"></i><span class="status-text">${esc(state.text)}</span></span>`}
     function updateCountdowns(){document.querySelectorAll("[data-countdown-target]").forEach(el=>{const target=Number(el.dataset.countdownTarget),remaining=target-Date.now(),text=el.querySelector(".status-text");if(!text)return;if(remaining<=0){text.textContent="กำลังอัปเดตผล";el.removeAttribute("data-countdown-target")}else{text.textContent=`รอออกผล ${countdown(remaining)}`}})}
     function hero(t,item,kind=t.id){const s=stateFor(t,item),shown=s.waiting?null:item,drawDate=s.waiting?todayIso():item?.date,main=shown?.main||"------",top3=shown?.top3||"---",bottom=shown?.bottom2||"--",top2=shown?main.slice(-2):"--",showTop2=t.top2||t.id==="government",label=t.id==="lao"||t.id==="government"?"":`<div class="result-label">ผลรางวัล</div>`;return`<article class="hero-card ${kind}"><div class="card-head"><div class="identity"><div class="symbol">${t.icon}</div><div><h2>${esc(t.name)}</h2><div class="date-line">งวดวันที่ ${thaiDate(drawDate||"",true)}</div></div></div>${statusHtml(s)}</div><div class="result-main">${label}<div class="big-number">${esc(main)}</div></div><div class="breakdown"><div><span>3 ตัวบน</span><strong>${esc(top3)}</strong></div>${showTop2?`<div><span>2 ตัวบน</span><strong>${esc(top2)}</strong></div>`:""}<div><span>2 ตัวล่าง</span><strong>${esc(bottom)}</strong></div></div></article>`}
     function mini(t,item){const s=stateFor(t,item),shown=s.waiting?null:item,drawDate=s.waiting?todayIso():item?.date,main=shown?.main||"-----";return`<article class="mini-card" style="border-top:3px solid ${t.color}"><div class="mini-top"><div><div class="mini-name">${t.icon} ${esc(t.name)}</div><div class="mini-tag">${thaiDate(drawDate||"")} · ${pad(t.hour)}:${pad(t.minute)} น.</div></div>${statusHtml(s)}</div><div class="mini-number">${esc(main)}</div><div class="mini-breakdown"><div><span>3 ตัวบน</span><strong>${esc(shown?.top3||"---")}</strong></div>${t.top2?`<div><span>2 ตัวบน</span><strong>${esc(shown?main.slice(-2):"--")}</strong></div>`:""}<div><span>2 ตัวล่าง</span><strong>${esc(shown?.bottom2||"--")}</strong></div></div></article>`}
-    function stocksMarkup(){const stockTypes=sortTypesByUpcoming(TYPES.filter(t=>t.group==="stocks"));return`<div class="stock-panel"><div class="stock-header"><span>ประเภท</span><span>เวลาออก</span><span>สถานะ</span><span aria-hidden="true"></span><span>3 ตัวบน</span><span>2 ตัวล่าง</span></div>${stockTypes.map(t=>{const i=latest(t.id),s=stateFor(t,i),shown=s.waiting?null:i;return`<div class="stock-row" style="--accent:${t.color}"><div class="stock-name"><span class="flag">${t.icon}</span>${esc(t.name)}</div><div class="stock-cell stock-time"><span class="mobile-label">เวลาออก</span><strong>${pad(t.hour)}:${pad(t.minute)} น.</strong></div><div class="stock-cell stock-status"><span class="mobile-label">สถานะ</span>${statusHtml(s)}</div><div class="stock-cell stock-main-cell"><div class="stock-main">${esc(shown?.main||"-----")}</div></div><div class="stock-cell"><span class="mobile-label">3 ตัวบน</span><div class="stock-value">${esc(shown?.top3||"---")}</div></div><div class="stock-cell"><span class="mobile-label">2 ตัวล่าง</span><div class="stock-value">${esc(shown?.bottom2||"--")}</div></div></div>`}).join("")}</div>`}
+    function stocksMarkup(){const stockTypes=sortTypesByPriority(TYPES.filter(t=>t.group==="stocks"));return`<div class="stock-panel"><div class="stock-header"><span>ประเภท</span><span>เวลาออก</span><span>สถานะ</span><span aria-hidden="true"></span><span>3 ตัวบน</span><span>2 ตัวล่าง</span></div>${stockTypes.map(t=>{const i=latest(t.id),s=stateFor(t,i),shown=s.waiting?null:i;return`<div class="stock-row" style="--accent:${t.color}"><div class="stock-name"><span class="flag">${t.icon}</span>${esc(t.name)}</div><div class="stock-cell stock-time"><span class="mobile-label">เวลาออก</span><strong>${pad(t.hour)}:${pad(t.minute)} น.</strong></div><div class="stock-cell stock-status"><span class="mobile-label">สถานะ</span>${statusHtml(s)}</div><div class="stock-cell stock-main-cell"><div class="stock-main">${esc(shown?.main||"-----")}</div></div><div class="stock-cell"><span class="mobile-label">3 ตัวบน</span><div class="stock-value">${esc(shown?.top3||"---")}</div></div><div class="stock-cell"><span class="mobile-label">2 ตัวล่าง</span><div class="stock-value">${esc(shown?.bottom2||"--")}</div></div></div>`}).join("")}</div>`}
     function monthLabel(month){return new Intl.DateTimeFormat("th-TH",{month:"long",year:"numeric"}).format(new Date(`${month}-01T12:00:00+07:00`))}
     function historyMarkup(title,allowedIds=TYPES.map(t=>t.id)){const chosen=allowedIds.includes(historyType)?historyType:allowedIds[0];historyType=chosen;const t=TYPES.find(x=>x.id===chosen),list=[...(DATA[chosen]||[])].sort((a,b)=>b.date.localeCompare(a.date)),months=[...new Set(list.map(x=>x.date.slice(0,7)))],historyIcon=allowedIds.length===TYPES.length?"🕘":allowedIds.includes("government")?"🏛️":allowedIds.includes("dow")?"📈":"🌏";if(historyMonth!=="all"&&!months.includes(historyMonth))historyMonth="all";const filtered=historyMonth==="all"?list:list.filter(x=>x.date.startsWith(historyMonth)),rows=filtered.map(x=>`<tr><td>${historyShortDate(x.date)}</td><td class="number">${esc(x.main)}</td><td class="number">${esc(x.top3)}</td>${t.top2?`<td class="number">${esc(String(x.main).slice(-2))}</td>`:""}<td class="number">${esc(x.bottom2)}</td></tr>`).join("");return`<div class="history-head"><h2><span class="section-icon" aria-hidden="true">${historyIcon}</span>${esc(title)}</h2><div class="history-controls"><select id="history-type">${allowedIds.map(id=>{const x=TYPES.find(t=>t.id===id);return`<option value="${id}" ${id===chosen?"selected":""}>${esc(x.name)}</option>`}).join("")}</select><select id="history-month"><option value="all">ทุกเดือน</option>${months.map(m=>`<option value="${m}" ${m===historyMonth?"selected":""}>${monthLabel(m)}</option>`).join("")}</select></div></div>${rows?`<div class="table-shell"><div class="table-swipe-guide"><span class="swipe-arrows">↔</span>ปัดตารางเพื่อดูผลเพิ่มเติม</div><div class="scroll-cue left hidden" aria-hidden="true"></div><div class="table-wrap"><table><thead><tr><th>วันที่</th><th>เลขหลัก</th><th>3 ตัวบน</th>${t.top2?"<th>2 ตัวบน</th>":""}<th>2 ตัวล่าง</th></tr></thead><tbody>${rows}</tbody></table></div><div class="scroll-cue right" aria-hidden="true"></div></div>`:`<div class="empty">ยังไม่มีผลหวยย้อนหลังประเภทนี้</div>`}`}
     function bindTableGuide(container){const shell=container.querySelector(".table-shell"),wrap=container.querySelector(".table-wrap"),left=container.querySelector(".scroll-cue.left"),right=container.querySelector(".scroll-cue.right");if(!shell||!wrap||!left||!right)return;const update=()=>{const max=Math.max(0,wrap.scrollWidth-wrap.clientWidth),atLeft=wrap.scrollLeft<=2,atRight=wrap.scrollLeft>=max-2;left.classList.toggle("hidden",atLeft||max===0);right.classList.toggle("hidden",atRight||max===0)};wrap.addEventListener("scroll",()=>{if(Math.abs(wrap.scrollLeft)>2)shell.classList.add("was-scrolled");update()},{passive:true});update()}
     function bindHistory(container,allowed,title){container.querySelector("#history-type")?.addEventListener("change",e=>{historyType=e.target.value;historyMonth="all";container.innerHTML=historyMarkup(title,allowed);bindHistory(container,allowed,title)});container.querySelector("#history-month")?.addEventListener("change",e=>{historyMonth=e.target.value;container.innerHTML=historyMarkup(title,allowed);bindHistory(container,allowed,title)});bindTableGuide(container)}
-    function render(){const government=TYPES[0],lao=TYPES[1],regional=TYPES.filter(t=>t.group==="regional"),hanoi=regional.filter(t=>t.id!=="lao"),stocks=TYPES.filter(t=>t.group==="stocks"),governmentItem=latest("government"),laoItem=latest("lao"),showGovernment=ageInDays(governmentItem)<=3,governmentFeature=$("#government-feature"),governmentGroup=$("#latest-government-group"),regionalGroup=$("#latest-regional-group"),laoFeature=$("#lao-feature"),hanoiBlock=$("#latest-hanoi-block"),latestView=$("#view-latest");governmentGroup.classList.toggle("hide",!showGovernment);governmentFeature.innerHTML=showGovernment?hero(government,governmentItem,"government"):"";laoFeature.innerHTML=hero(lao,laoItem,"lao");const sortedRegional=sortTypesByUpcoming(hanoi);$("#regional-grid").innerHTML=sortedRegional.map(t=>mini(t,latest(t.id))).join("");if(Math.min(...hanoi.map(upcomingScore))<upcomingScore(lao)){regionalGroup.insertBefore(hanoiBlock,regionalGroup.firstElementChild)}else{regionalGroup.insertBefore(laoFeature.parentElement,regionalGroup.firstElementChild)}$("#stock-list").innerHTML=stocksMarkup();const latestGroups=[{el:governmentGroup,types:[government],visible:showGovernment},{el:regionalGroup,types:regional,visible:true},{el:$("#latest-stocks-group"),types:stocks,visible:true}].filter(g=>g.visible).sort((a,b)=>Math.min(...a.types.map(upcomingScore))-Math.min(...b.types.map(upcomingScore)));latestGroups.forEach(group=>latestView.appendChild(group.el));$("#government-full").innerHTML=hero(government,governmentItem,"government");$("#regional-full").innerHTML=sortTypesByUpcoming(regional).map(t=>mini(t,latest(t.id))).join("");$("#stock-full").innerHTML=stocksMarkup();const groups=[["#government-history",["government"],"ผลหวยรัฐบาลไทยย้อนหลัง"],["#regional-history",regional.map(t=>t.id),"ผลหวยลาว–ฮานอยย้อนหลัง"],["#stock-history",stocks.map(t=>t.id),"ผลหวยหุ้นย้อนหลัง"],["#all-history",TYPES.map(t=>t.id),"ผลหวยย้อนหลัง"]];groups.forEach(([sel,ids,title])=>{const el=$(sel);el.innerHTML=historyMarkup(title,ids);bindHistory(el,ids,title)})}
-    async function load(){try{const r=await fetch(`${DATA_URL}?_=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw Error(r.status);DATA=await r.json();render()}catch(e){document.querySelectorAll(".view").forEach(v=>v.classList.add("loading"));$("#view-latest").insertAdjacentHTML("afterbegin",`<div class="empty">โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>`)}}
-    function updateClock(){const p=bangkokParts();const y=+p.year,m=+p.month,d=+p.day;$("#today-label").textContent=new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)));$("#clock").textContent=`${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)} น.`;updateCountdowns()}
+    function render(){const government=TYPES[0],lao=TYPES[1],regional=TYPES.filter(t=>t.group==="regional"),hanoi=regional.filter(t=>t.id!=="lao"),stocks=TYPES.filter(t=>t.group==="stocks"),governmentItem=latest("government"),laoItem=latest("lao"),showGovernment=ageInDays(governmentItem)<=3||priorityFor(government).active,governmentFeature=$("#government-feature"),governmentGroup=$("#latest-government-group"),regionalGroup=$("#latest-regional-group"),laoFeature=$("#lao-feature"),hanoiBlock=$("#latest-hanoi-block"),latestView=$("#view-latest");governmentGroup.classList.toggle("hide",!showGovernment);governmentFeature.innerHTML=showGovernment?hero(government,governmentItem,"government"):"";laoFeature.innerHTML=hero(lao,laoItem,"lao");const sortedRegional=sortTypesByPriority(hanoi);$("#regional-grid").innerHTML=sortedRegional.map(t=>mini(t,latest(t.id))).join("");if(compareTypes(sortedRegional[0],lao)<0){regionalGroup.insertBefore(hanoiBlock,regionalGroup.firstElementChild)}else{regionalGroup.insertBefore(laoFeature.parentElement,regionalGroup.firstElementChild)}$("#stock-list").innerHTML=stocksMarkup();const latestGroups=[{el:governmentGroup,types:[government],visible:showGovernment},{el:regionalGroup,types:regional,visible:true},{el:$("#latest-stocks-group"),types:stocks,visible:true}].filter(g=>g.visible).sort(compareGroups);latestGroups.forEach(group=>latestView.appendChild(group.el));$("#government-full").innerHTML=hero(government,governmentItem,"government");$("#regional-full").innerHTML=sortTypesByPriority(regional).map(t=>mini(t,latest(t.id))).join("");$("#stock-full").innerHTML=stocksMarkup();const groups=[["#government-history",["government"],"ผลหวยรัฐบาลไทยย้อนหลัง"],["#regional-history",regional.map(t=>t.id),"ผลหวยลาว–ฮานอยย้อนหลัง"],["#stock-history",stocks.map(t=>t.id),"ผลหวยหุ้นย้อนหลัง"],["#all-history",TYPES.map(t=>t.id),"ผลหวยย้อนหลัง"]];groups.forEach(([sel,ids,title])=>{const el=$(sel);el.innerHTML=historyMarkup(title,ids);bindHistory(el,ids,title)})}
+    async function load(){try{const r=await fetch(`${DATA_URL}?_=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw Error(r.status);DATA=await r.json();render();lastPriorityMinute=Math.floor(Date.now()/60000)}catch(e){document.querySelectorAll(".view").forEach(v=>v.classList.add("loading"));$("#view-latest").insertAdjacentHTML("afterbegin",`<div class="empty">โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>`)}}
+    function updateClock(){const p=bangkokParts();const y=+p.year,m=+p.month,d=+p.day;$("#today-label").textContent=new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)));$("#clock").textContent=`${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)} น.`;updateCountdowns();const minute=Math.floor(Date.now()/60000);if(minute!==lastPriorityMinute&&Object.keys(DATA).length){lastPriorityMinute=minute;render()}}
     function switchView(button){const view=document.getElementById(`view-${button.dataset.view}`);if(!view)return;document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v===view));window.scrollTo({top:0,behavior:"smooth"})}
     function setupAffiliatePopup(){
       const popup=$("#affiliate-popup"),close=$("#affiliate-close"),link=$("#affiliate-link"),storageKey="affiliatePopupLastShown";
@@ -211,43 +200,6 @@ const AFFILIATE_URL = getRandomAffLink();
     document.querySelectorAll("#nav button[data-view]").forEach(button=>button.addEventListener("click",()=>switchView(button)));
     $("#line-group-button").href=LINE_GROUP_URL;
     updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);
-
-
-// ... โค้ดเดิมด้านบน ...
-
-    document.querySelectorAll("#nav button[data-view]").forEach(button=>button.addEventListener("click",()=>switchView(button)));
-    $("#line-group-button").href=LINE_GROUP_URL;
-    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);
-
-    // ==========================================
-    // 💥 วางสคริปต์ Popunder เพิ่มเติมตรงนี้
-    // ==========================================
-    (function setupPopunder() {
-      const affUrl = AFFILIATE_URL;
-      const storageKey = "popunder_opened_session";
-
-      let isOpened = false;
-      try {
-        isOpened = sessionStorage.getItem(storageKey) === "true";
-      } catch (e) {}
-
-      if (isOpened) return;
-
-      function handleGlobalClick(e) {
-        if (isOpened) return;
-
-        window.open(affUrl, "_blank");
-        isOpened = true;
-
-        try {
-          sessionStorage.setItem(storageKey, "true");
-        } catch (e) {}
-
-        document.removeEventListener("click", handleGlobalClick, true);
-      }
-
-      document.addEventListener("click", handleGlobalClick, true);
-    })();
   </script>
 </body>
 </html>
