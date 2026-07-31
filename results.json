@@ -10,11 +10,11 @@
     },
     {
       "date": "2026-07-30",
-      "time": "20:35",
+      "time": "03:57",
       "status": "out",
-      "main": "740702",
-      "top3": "702",
-      "bottom2": "07"
+      "main": "323290",
+      "top3": "290",
+      "bottom2": "32"
     },
     {
       "date": "2026-07-29",
@@ -52,11 +52,11 @@
     },
     {
       "date": "2026-07-30",
-      "time": "20:04",
+      "time": "03:57",
       "status": "out",
-      "main": "43065",
-      "top3": "065",
-      "bottom2": "74"
+      "main": "93233",
+      "top3": "233",
+      "bottom2": "92"
     },
     {
       "date": "2026-07-29",
@@ -94,11 +94,11 @@
     },
     {
       "date": "2026-07-30",
-      "time": "19:26",
+      "time": "03:57",
       "status": "out",
-      "main": "50834",
-      "top3": "834",
-      "bottom2": "97"
+      "main": "41710",
+      "top3": "710",
+      "bottom2": "59"
     },
     {
       "date": "2026-07-29",
@@ -136,11 +136,11 @@
     },
     {
       "date": "2026-07-30",
-      "time": "19:40",
+      "time": "03:57",
       "status": "out",
-      "main": "53275",
-      "top3": "275",
-      "bottom2": "99"
+      "main": "79105",
+      "top3": "105",
+      "bottom2": "80"
     },
     {
       "date": "2026-07-29",
@@ -171,11 +171,27 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "dow"
+      "government",
+      "lao",
+      "hanoi_special",
+      "hanoi_normal",
+      "hanoi_vip",
+      "dow",
+      "nikkei_morning",
+      "nikkei_afternoon",
+      "thai_stock"
     ],
-    "last_run": "2026-08-01T03:26:33+07:00",
+    "last_run": "2026-08-01T03:57:45+07:00",
     "updated": [
-      "dow"
+      "government",
+      "lao",
+      "hanoi_special",
+      "hanoi_normal",
+      "hanoi_vip",
+      "dow",
+      "nikkei_morning",
+      "nikkei_afternoon",
+      "thai_stock"
     ],
     "errors": {}
   },
@@ -190,7 +206,7 @@
     },
     {
       "date": "2026-07-15",
-      "time": "22:36",
+      "time": "03:57",
       "status": "out",
       "main": "639214",
       "top3": "214",
@@ -200,7 +216,7 @@
   "dow": [
     {
       "date": "2026-07-31",
-      "time": "03:26",
+      "time": "03:57",
       "status": "out",
       "main": "50397",
       "top3": "503",
@@ -258,11 +274,11 @@
     },
     {
       "date": "2026-07-30",
-      "time": "12:15",
+      "time": "03:57",
       "status": "out",
-      "main": "84122",
-      "top3": "841",
-      "bottom2": "22"
+      "main": "22582",
+      "top3": "225",
+      "bottom2": "82"
     },
     {
       "date": "2026-07-29",
@@ -299,6 +315,14 @@
       "bottom2": "24"
     },
     {
+      "date": "2026-07-30",
+      "time": "03:57",
+      "status": "out",
+      "main": "20259",
+      "top3": "202",
+      "bottom2": "59"
+    },
+    {
       "date": "2026-07-28",
       "time": "22:36",
       "status": "out",
@@ -326,11 +350,11 @@
     },
     {
       "date": "2026-07-30",
-      "time": "18:06",
+      "time": "03:57",
       "status": "out",
-      "main": "31136",
-      "top3": "311",
-      "bottom2": "36"
+      "main": "46453",
+      "top3": "464",
+      "bottom2": "53"
     },
     {
       "date": "2026-07-28",
