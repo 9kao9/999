@@ -141,7 +141,7 @@
     "requested": [
       "nikkei_afternoon"
     ],
-    "last_run": "2026-07-31T13:05:40+07:00",
+    "last_run": "2026-07-31T13:10:44+07:00",
     "updated": [
       "nikkei_afternoon"
     ],
@@ -251,16 +251,8 @@
   ],
   "nikkei_afternoon": [
     {
-      "date": "2026-07-30",
-      "time": "16:05",
-      "status": "out",
-      "main": "74324",
-      "top3": "743",
-      "bottom2": "24"
-    },
-    {
-      "date": "2026-07-29",
-      "time": "13:05",
+      "date": "2026-07-31",
+      "time": "13:10",
       "status": "out",
       "main": "74324",
       "top3": "743",
