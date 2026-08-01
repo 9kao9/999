@@ -171,29 +171,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "government",
-      "lao",
-      "hanoi_special",
-      "hanoi_normal",
-      "hanoi_vip",
-      "dow",
-      "nikkei_morning",
-      "nikkei_afternoon",
-      "thai_stock"
+      "government"
     ],
-    "last_run": "2026-08-01T15:10:35+07:00",
-    "updated": [],
-    "errors": {
-      "government": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "lao": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "hanoi_special": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "hanoi_normal": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "hanoi_vip": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "dow": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "nikkei_morning": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "nikkei_afternoon": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
-      "thai_stock": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}"
-    }
+    "last_run": "2026-08-01T16:05:36+07:00",
+    "updated": [
+      "government"
+    ],
+    "errors": {}
   },
   "government": [
     {
@@ -206,7 +190,7 @@
     },
     {
       "date": "2026-07-15",
-      "time": "12:20",
+      "time": "16:05",
       "status": "out",
       "main": "639214",
       "top3": "214",
