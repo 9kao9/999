@@ -181,14 +181,13 @@
       "nikkei_afternoon",
       "thai_stock"
     ],
-    "last_run": "2026-08-01T12:20:38+07:00",
-    "updated": [
-      "government",
-      "lao",
-      "hanoi_special",
-      "hanoi_normal"
-    ],
+    "last_run": "2026-08-01T12:25:40+07:00",
+    "updated": [],
     "errors": {
+      "government": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
+      "lao": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
+      "hanoi_special": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
+      "hanoi_normal": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
       "hanoi_vip": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
       "dow": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
       "nikkei_morning": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
