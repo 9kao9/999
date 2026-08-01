@@ -173,13 +173,21 @@
     "requested": [
       "government"
     ],
-    "last_run": "2026-08-01T16:05:36+07:00",
+    "last_run": "2026-08-01T16:10:39+07:00",
     "updated": [
       "government"
     ],
     "errors": {}
   },
   "government": [
+    {
+      "date": "2026-08-01",
+      "time": "16:10",
+      "status": "out",
+      "main": "932479",
+      "top3": "479",
+      "bottom2": "69"
+    },
     {
       "date": "2026-07-16",
       "time": "21:50",
