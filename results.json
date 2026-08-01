@@ -181,7 +181,7 @@
       "nikkei_afternoon",
       "thai_stock"
     ],
-    "last_run": "2026-08-01T14:25:36+07:00",
+    "last_run": "2026-08-01T14:30:42+07:00",
     "updated": [],
     "errors": {
       "government": "ScrapingAnt HTTP 403: {\"detail\":\"Requests quota limit reached. Please visit https://app.scrapingant.com/subscriptions to upgrade your plan and get more requests\"}",
