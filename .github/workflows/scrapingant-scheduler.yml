@@ -2,9 +2,6 @@ name: Wake lottery updater every 5 minutes
 
 on:
   workflow_dispatch:
-  schedule:
-    # รอบหลักทุก 5 นาที โดยเริ่มนาที 02 เพื่อหลบช่วงต้นชั่วโมง
-    - cron: "2,7,12,17,22,27,32,37,42,47,52,57 * * * *"
 
 permissions:
   contents: write

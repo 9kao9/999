@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       lottery_keys:
-        description: "ชื่อรายการ คั่นด้วย comma หรือเว้นว่างเพื่อดึงทั้ง 9 หน้า"
+        description: "ชื่อรายการ คั่นด้วย comma (เว้นว่าง = ไม่เรียก API เพื่อป้องกันเครดิตหมด)"
         required: false
         type: string
         default: ""
@@ -22,10 +22,6 @@ on:
       - ".github/workflows/scrapingant-production.yml"
       - ".github/workflows/scrapingant-scheduler.yml"
       - "scrape_with_scrapingant.py"
-  schedule:
-    # รอบสำรอง: เลี่ยงนาที 00 ซึ่งเป็นช่วงที่ GitHub Actions หนาแน่น
-    # ScrapingAnt จะถูกเรียกเฉพาะรายการที่ถึงเวลาและยังไม่มีผลเท่านั้น
-    - cron: "4,9,14,19,24,29,34,39,44,49,54,59 * * * *"
 
 permissions:
   contents: write
@@ -53,8 +49,15 @@ jobs:
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ] && \
              [ "$SCHEDULED_CHECK" != "true" ]; then
-            echo "keys=$MANUAL_KEYS" >> "$GITHUB_OUTPUT"
-            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            if [ -z "$MANUAL_KEYS" ]; then
+              echo "keys=" >> "$GITHUB_OUTPUT"
+              echo "should_run=false" >> "$GITHUB_OUTPUT"
+              echo "notice=หยุดเพื่อประหยัดเครดิต: กรุณาระบุชื่อหวยเมื่อต้องการรันด้วยตนเอง" >> "$GITHUB_OUTPUT"
+            else
+              echo "keys=$MANUAL_KEYS" >> "$GITHUB_OUTPUT"
+              echo "should_run=true" >> "$GITHUB_OUTPUT"
+              echo "notice=รันด้วยตนเองเฉพาะรายการ: $MANUAL_KEYS" >> "$GITHUB_OUTPUT"
+            fi
             exit 0
           fi
 
