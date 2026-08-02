@@ -88,15 +88,12 @@ def fetch_html(
         f"{target_url}#_scrape_ts="
         f"{int(datetime.now(timezone.utc).timestamp())}"
     )
-    # HTTP 423 means the target detected ScrapingAnt's current browser.
-    # Every request rotates the datacenter IP. Retry once, then use the
-    # inexpensive non-browser request as the final fallback.
-    attempts = [
-        (cache_busted_url, render_javascript, "JavaScript attempt 1"),
-        (target_url, render_javascript, "JavaScript attempt 2"),
-    ]
+    # Try the inexpensive request first. If ExpHuay requires rendering, use
+    # JavaScript only once. A successful Cloudflare challenge page is charged
+    # like a normal browser request, so repeating it would waste credits.
+    attempts = [(target_url, False, "lightweight attempt")]
     if render_javascript:
-        attempts.append((target_url, False, "lightweight fallback"))
+        attempts.append((cache_busted_url, True, "JavaScript attempt"))
     last_html = ""
 
     for attempt_number, (attempt_url, use_browser, label) in enumerate(
