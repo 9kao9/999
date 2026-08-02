@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 
 
 PAGES = {
-    "government": "https://exphuay.com/result/goverment",
+    "government": "https://news.sanook.com/lotto/",
     "lao": "https://laodl.com/api/website/laolot/WinPrizeHistory?type=1",
     "hanoi_special": "https://www.xsthm.com/result",
     "hanoi_normal": "https://www.minhngoc.net.vn/ket-qua-xo-so/mien-bac.html",
@@ -380,6 +380,51 @@ def parse_set_thai_stock(
     bottom2 = change_decimals
     main_number = top3 + bottom2
     return set_date, main_number, top3, bottom2
+
+
+def parse_sanook_government(html: str) -> tuple[str, str, str, str]:
+    """Read only Sanook's current government-lottery section, not history."""
+    soup = BeautifulSoup(html, "html.parser")
+    page_text = soup.get_text(" ", strip=True)
+    page_text = re.sub(r"\s+", " ", page_text)
+
+    months = {
+        "มกราคม": 1, "กุมภาพันธ์": 2, "มีนาคม": 3,
+        "เมษายน": 4, "พฤษภาคม": 5, "มิถุนายน": 6,
+        "กรกฎาคม": 7, "สิงหาคม": 8, "กันยายน": 9,
+        "ตุลาคม": 10, "พฤศจิกายน": 11, "ธันวาคม": 12,
+    }
+    match = re.search(
+        r"ตรวจสลากกินแบ่งรัฐบาล\s+ตรวจหวย\s+"
+        r"(?P<day>\d{1,2})\s+"
+        r"(?P<month>[ก-๙]+)\s+"
+        r"(?P<year>\d{4})\s+"
+        r"(?P<main>\d{6})\s+รางวัลที่\s*1\b"
+        r".{0,500}?"
+        r"(?P<bottom>\d{2})\s+เลขท้าย\s*2\s*ตัว\b",
+        page_text,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        raise RuntimeError(
+            "Sanook: ไม่พบงวดล่าสุดครบชุดใต้หัวข้อ ตรวจสลากกินแบ่งรัฐบาล"
+        )
+
+    month_name = match.group("month")
+    if month_name not in months:
+        raise RuntimeError(f"Sanook: ไม่รู้จักชื่อเดือน {month_name!r}")
+    year = int(match.group("year"))
+    christian_year = year - 543 if year > 2400 else year
+    draw_date = datetime(
+        christian_year,
+        months[month_name],
+        int(match.group("day")),
+    ).date().isoformat()
+
+    main_number = match.group("main")
+    top3 = main_number[-3:]
+    bottom2 = match.group("bottom")
+    return draw_date, main_number, top3, bottom2
 
 
 def parse_xsthm_special(payload: dict) -> tuple[str, str, str, str]:
@@ -842,7 +887,27 @@ def main() -> int:
 
     for key, url in selected_pages.items():
         try:
-            if key == "lao":
+            if key == "government":
+                try:
+                    html = fetch_direct_html(url)
+                    draw_date, main_number, top3, bottom2 = (
+                        parse_sanook_government(html)
+                    )
+                    print(
+                        "[government] fetched directly from Sanook "
+                        "(0 ScrapingAnt credits)"
+                    )
+                except Exception as direct_error:
+                    print(
+                        f"[government] direct Sanook request failed ({direct_error}); "
+                        "retrying through ScrapingAnt...",
+                        file=sys.stderr,
+                    )
+                    html = fetch_html(api_key, url, True)
+                    draw_date, main_number, top3, bottom2 = (
+                        parse_sanook_government(html)
+                    )
+            elif key == "lao":
                 payload = fetch_direct_json(url)
                 draw_date, main_number, top3, bottom2 = parse_laodl_result(
                     payload,
@@ -953,6 +1018,7 @@ def main() -> int:
                 draw_date = extract_draw_date(soup, now)
                 main_number, top3, bottom2 = normalize_result(key, numbers)
             if key in {
+                "government",
                 "lao",
                 "hanoi_special",
                 "hanoi_normal",
