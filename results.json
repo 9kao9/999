@@ -203,13 +203,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_normal"
+      "hanoi_vip"
     ],
-    "last_run": "2026-08-02T20:32:03+07:00",
-    "updated": [
-      "hanoi_normal"
-    ],
-    "errors": {}
+    "last_run": "2026-08-02T20:35:36+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_vip": "เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต"
+    }
   },
   "government": [
     {
