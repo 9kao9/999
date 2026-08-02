@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 PAGES = {
     "government": "https://exphuay.com/result/goverment",
     "lao": "https://exphuay.com/result/laosdevelops",
-    "hanoi_special": "https://exphuay.com/result/xsthm",
+    "hanoi_special": "https://www.xsthm.com/result",
     "hanoi_normal": "https://www.minhngoc.net.vn/ket-qua-xo-so/mien-bac.html",
     "hanoi_vip": "https://exphuay.com/result/mlnhngo",
     "dow": "https://exphuay.com/result/dji",
@@ -173,6 +173,53 @@ def fetch_direct_html(target_url: str) -> str:
     response.raise_for_status()
     response.encoding = response.apparent_encoding or response.encoding
     return response.text
+
+
+def fetch_direct_json(target_url: str) -> dict:
+    """Fetch a public JSON result endpoint without ScrapingAnt."""
+    response = requests.get(
+        target_url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/127.0 Safari/537.36"
+            ),
+            "Accept": "application/json",
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    if not isinstance(payload, dict):
+        raise RuntimeError("result endpoint returned invalid JSON")
+    return payload
+
+
+def parse_xsthm_special(payload: dict) -> tuple[str, str, str, str]:
+    """Read Hanoi special from xsthm.com's public real-time endpoint."""
+    items = payload.get("items")
+    label = str(payload.get("label", "")).strip()
+    if not isinstance(items, list) or len(items) < 2:
+        raise RuntimeError("xsthm.com: latest draw is incomplete")
+
+    first_prize = digits_only(str(items[0]))
+    main_number = digits_only(str(items[-1]))
+    if len(main_number) != 5 or len(first_prize) != 5:
+        raise RuntimeError(
+            "xsthm.com: special or first prize is not complete"
+        )
+    try:
+        draw_date = datetime.strptime(label, "%d-%m-%Y").date()
+    except ValueError as exc:
+        raise RuntimeError(f"xsthm.com: invalid draw date {label!r}") from exc
+
+    return (
+        draw_date.isoformat(),
+        main_number,
+        main_number[-3:],
+        first_prize[-2:],
+    )
 
 
 def parse_minhngoc_normal(html: str) -> tuple[str, str, str, str]:
@@ -531,7 +578,16 @@ def main() -> int:
 
     for key, url in selected_pages.items():
         try:
-            if key == "hanoi_normal":
+            if key == "hanoi_special":
+                payload = fetch_direct_json(url)
+                draw_date, main_number, top3, bottom2 = (
+                    parse_xsthm_special(payload)
+                )
+                print(
+                    "[hanoi_special] fetched directly from xsthm.com "
+                    "(0 ScrapingAnt credits)"
+                )
+            elif key == "hanoi_normal":
                 html = fetch_direct_html(url)
                 draw_date, main_number, top3, bottom2 = (
                     parse_minhngoc_normal(html)
