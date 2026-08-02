@@ -43,6 +43,14 @@
   ],
   "hanoi_special": [
     {
+      "date": "2026-08-02",
+      "time": "20:45",
+      "status": "out",
+      "main": "58803",
+      "top3": "803",
+      "bottom2": "19"
+    },
+    {
       "date": "2026-08-01",
       "time": "17:35",
       "status": "out",
@@ -203,13 +211,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "hanoi_special"
     ],
-    "last_run": "2026-08-02T20:35:36+07:00",
-    "updated": [],
-    "errors": {
-      "hanoi_vip": "เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต"
-    }
+    "last_run": "2026-08-02T20:45:22+07:00",
+    "updated": [
+      "hanoi_special"
+    ],
+    "errors": {}
   },
   "government": [
     {
