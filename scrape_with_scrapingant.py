@@ -26,8 +26,10 @@ PAGES = {
     "dow": "https://www.msn.com/en-us/money/indexdetails/fi-a6qja2",
     "nikkei_morning": "https://indexes.nikkei.co.jp/en/nkave",
     "nikkei_afternoon": "https://indexes.nikkei.co.jp/en/nkave",
-    "thai_stock": "https://exphuay.com/result/set",
+    "thai_stock": "https://www.set.or.th/th/market/index/set/overview",
 }
+
+SET50_URL = "https://www.set.or.th/th/market/index/set50/overview"
 
 DATA_FILE = Path(__file__).with_name("results.json")
 THAI_TZ = timezone(timedelta(hours=7), name="Asia/Bangkok")
@@ -298,6 +300,86 @@ def parse_nikkei_225(html: str) -> tuple[str, str, str, str]:
     bottom2 = change_decimals
     main_number = top3 + bottom2
     return draw_date.isoformat(), main_number, top3, bottom2
+
+
+def parse_set_thai_stock(
+    set50_html: str,
+    set_html: str,
+) -> tuple[str, str, str, str]:
+    """Build the Thai evening stock result from official SET50 and SET data."""
+
+    def clean_text(html: str) -> str:
+        text = BeautifulSoup(html, "html.parser").get_text(" ", strip=True)
+        text = re.sub(r"[\u200e\u200f\u202a-\u202e\u2066-\u2069]", "", text)
+        return re.sub(r"\s+", " ", text)
+
+    set50_text = clean_text(set50_html)
+    set_text = clean_text(set_html)
+    number_pattern = r"\d{1,3}(?:,\d{3})*\.\d{2}"
+    change_pattern = r"[+\-−]\s*\d[\d,]*\.\d{2}"
+
+    set50_match = re.search(
+        rf"ดัชนีราคา\s+SET50.*?\bSET50\b\s+ดัชนี\s+"
+        rf"(?P<index>{number_pattern})\s+"
+        rf"(?P<change>{change_pattern})",
+        set50_text,
+        flags=re.IGNORECASE,
+    )
+    set_match = re.search(
+        rf"ดัชนีราคาหุ้นตลาดหลักทรัพย์แห่งประเทศไทย.*?\bSET\b\s+ดัชนี\s+"
+        rf"(?P<index>{number_pattern})\s+"
+        rf"(?P<change>{change_pattern})",
+        set_text,
+        flags=re.IGNORECASE,
+    )
+    if not set50_match:
+        raise RuntimeError("SET50: ไม่พบค่าดัชนีหลักและค่าความเปลี่ยนแปลง")
+    if not set_match:
+        raise RuntimeError("SET: ไม่พบค่าดัชนีหลักและค่าความเปลี่ยนแปลง")
+
+    if not re.search(r"สถานะตลาด\s*:\s*Closed", set50_text, re.IGNORECASE):
+        raise RuntimeError("SET50: ตลาดยังไม่แสดงสถานะ Closed")
+    if not re.search(r"สถานะตลาด\s*:\s*Closed", set_text, re.IGNORECASE):
+        raise RuntimeError("SET: ตลาดยังไม่แสดงสถานะ Closed")
+
+    thai_short_months = {
+        "ม.ค.": 1, "ก.พ.": 2, "มี.ค.": 3, "เม.ย.": 4,
+        "พ.ค.": 5, "มิ.ย.": 6, "ก.ค.": 7, "ส.ค.": 8,
+        "ก.ย.": 9, "ต.ค.": 10, "พ.ย.": 11, "ธ.ค.": 12,
+    }
+
+    def extract_date(text: str, label: str) -> str:
+        match = re.search(
+            r"ข้อมูลล่าสุด\s*:?[ ]*(\d{1,2})\s+([ก-๙.]+)\s+(\d{4})",
+            text,
+        )
+        if not match or match.group(2) not in thai_short_months:
+            raise RuntimeError(f"{label}: ไม่พบวันที่ข้อมูลล่าสุด")
+        day, month_name, year = match.groups()
+        christian_year = int(year) - 543 if int(year) > 2400 else int(year)
+        return datetime(
+            christian_year,
+            thai_short_months[month_name],
+            int(day),
+        ).date().isoformat()
+
+    set50_date = extract_date(set50_text, "SET50")
+    set_date = extract_date(set_text, "SET")
+    if set50_date != set_date:
+        raise RuntimeError(
+            f"SET: วันที่ SET50 ({set50_date}) และ SET ({set_date}) ไม่ตรงกัน"
+        )
+
+    set50_decimals = set50_match.group("index").rsplit(".", 1)[-1]
+    set_decimals = set_match.group("index").rsplit(".", 1)[-1]
+    change_decimals = (
+        set_match.group("change").replace(" ", "").replace("−", "-")
+        .rsplit(".", 1)[-1]
+    )
+    top3 = set50_decimals[-1] + set_decimals
+    bottom2 = change_decimals
+    main_number = top3 + bottom2
+    return set_date, main_number, top3, bottom2
 
 
 def parse_xsthm_special(payload: dict) -> tuple[str, str, str, str]:
@@ -826,6 +908,30 @@ def main() -> int:
                     )
                     html = fetch_html(api_key, url, True)
                     draw_date, main_number, top3, bottom2 = parse_nikkei_225(html)
+            elif key == "thai_stock":
+                try:
+                    set50_html = fetch_direct_html(SET50_URL)
+                    set_html = fetch_direct_html(url)
+                    draw_date, main_number, top3, bottom2 = parse_set_thai_stock(
+                        set50_html,
+                        set_html,
+                    )
+                    print(
+                        "[thai_stock] fetched directly from SET50 and SET "
+                        "(0 ScrapingAnt credits)"
+                    )
+                except Exception as direct_error:
+                    print(
+                        f"[thai_stock] direct SET request failed ({direct_error}); "
+                        "retrying through ScrapingAnt...",
+                        file=sys.stderr,
+                    )
+                    set50_html = fetch_html(api_key, SET50_URL, True)
+                    set_html = fetch_html(api_key, url, True)
+                    draw_date, main_number, top3, bottom2 = parse_set_thai_stock(
+                        set50_html,
+                        set_html,
+                    )
             else:
                 html = fetch_html(api_key, url, render_javascript)
                 soup = BeautifulSoup(html, "html.parser")
@@ -853,6 +959,7 @@ def main() -> int:
                 "hanoi_vip",
                 "nikkei_morning",
                 "nikkei_afternoon",
+                "thai_stock",
             }:
                 require_current_direct_date(key, draw_date, now)
             numbers_changed = result_differs_from_latest(
