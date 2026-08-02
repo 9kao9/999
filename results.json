@@ -198,7 +198,7 @@
       "hanoi_normal",
       "hanoi_vip"
     ],
-    "last_run": "2026-08-02T19:35:39+07:00",
+    "last_run": "2026-08-02T19:40:46+07:00",
     "updated": [],
     "errors": {
       "hanoi_normal": "ScrapingAnt HTTP 423: {\"detail\":\"Our browser was detected by target site. Retry the request or try adjusting proxy country, proxy type and browser rendering settings. Our documentation: https://docs.scrapingant.com/ and support email: support@scrapingant.com\"}",
