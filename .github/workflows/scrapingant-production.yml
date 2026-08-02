@@ -106,9 +106,10 @@ jobs:
                   due.append("government")
 
           daily_windows = {
-              "hanoi_special": (1053, 1140),
-              "hanoi_normal": (1113, 1200),
-              "hanoi_vip": (1173, 1260),
+              # เริ่มตรวจหลังเวลาออก 1 นาที เพราะทั้งสามแหล่งเป็นต้นทางตรง
+              "hanoi_special": (1051, 1140),
+              "hanoi_normal": (1111, 1200),
+              "hanoi_vip": (1171, 1260),
           }
           for key, (start, end) in daily_windows.items():
               if start <= minute <= end and not has_date(key, today):
@@ -126,6 +127,13 @@ jobs:
                   recent_failures = set(meta.get("errors", {}))
           except (TypeError, ValueError):
               pass
+          # The three Hanoi sources are now direct and cost 0 credits, so they
+          # may retry on every 5-minute wake until today's dated result exists.
+          recent_failures -= {
+              "hanoi_special",
+              "hanoi_normal",
+              "hanoi_vip",
+          }
           cooling_down = [key for key in due if key in recent_failures]
           due = [key for key in due if key not in recent_failures]
 
