@@ -21,7 +21,7 @@ PAGES = {
     "government": "https://exphuay.com/result/goverment",
     "lao": "https://exphuay.com/result/laosdevelops",
     "hanoi_special": "https://exphuay.com/result/xsthm",
-    "hanoi_normal": "https://exphuay.com/result/minhngoc",
+    "hanoi_normal": "https://www.minhngoc.net.vn/ket-qua-xo-so/mien-bac.html",
     "hanoi_vip": "https://exphuay.com/result/mlnhngo",
     "dow": "https://exphuay.com/result/dji",
     "nikkei_morning": "https://exphuay.com/result/nikkei-morning",
@@ -154,6 +154,59 @@ def fetch_html(
         )
 
     return last_html
+
+
+def fetch_direct_html(target_url: str) -> str:
+    """Fetch a static result page without spending ScrapingAnt credits."""
+    response = requests.get(
+        target_url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/127.0 Safari/537.36"
+            ),
+            "Accept-Language": "vi-VN,vi;q=0.9,en;q=0.8",
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+    response.encoding = response.apparent_encoding or response.encoding
+    return response.text
+
+
+def parse_minhngoc_normal(html: str) -> tuple[str, str, str, str]:
+    """Read the newest Northern Vietnam draw from Minh Ngoc.
+
+    Giải ĐB is the five-digit main result. The top result is its final three
+    digits, while the bottom result is the final two digits of Giải nhất.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    text = soup.get_text(" ", strip=True)
+    date_match = re.search(
+        r"KẾT\s*QUẢ\s*XỔ\s*SỐ\s*Miền\s*Bắc\s*-\s*"
+        r"(\d{2}/\d{2}/\d{4})",
+        text,
+        flags=re.IGNORECASE,
+    )
+    special_match = re.search(
+        r"Giải\s*ĐB\s*(\d{5})",
+        text,
+        flags=re.IGNORECASE,
+    )
+    first_match = re.search(
+        r"Giải\s*nhất\s*(\d{5})",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if not (date_match and special_match and first_match):
+        raise RuntimeError("Minh Ngoc: latest draw is incomplete")
+
+    draw_date = datetime.strptime(date_match.group(1), "%d/%m/%Y").date()
+    main_number = special_match.group(1)
+    top3 = main_number[-3:]
+    bottom2 = first_match.group(1)[-2:]
+    return draw_date.isoformat(), main_number, top3, bottom2
 
 
 def extract_numbers(soup: BeautifulSoup) -> list[str]:
@@ -478,21 +531,35 @@ def main() -> int:
 
     for key, url in selected_pages.items():
         try:
-            html = fetch_html(api_key, url, render_javascript)
-            soup = BeautifulSoup(html, "html.parser")
-            title = soup.title.get_text(" ", strip=True) if soup.title else ""
-            if (
-                "รอสักครู่" in title
-                or "just a moment" in title.lower()
-            ):
-                raise RuntimeError("เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต")
-            numbers = extract_numbers(soup)
-            if len(numbers) < 2:
-                raise RuntimeError(
-                    f"ไม่พบชุดผลรางวัล (title={title!r})"
+            if key == "hanoi_normal":
+                html = fetch_direct_html(url)
+                draw_date, main_number, top3, bottom2 = (
+                    parse_minhngoc_normal(html)
                 )
-            draw_date = extract_draw_date(soup, now)
-            main_number, top3, bottom2 = normalize_result(key, numbers)
+                print(
+                    "[hanoi_normal] fetched directly from Minh Ngoc "
+                    "(0 ScrapingAnt credits)"
+                )
+            else:
+                html = fetch_html(api_key, url, render_javascript)
+                soup = BeautifulSoup(html, "html.parser")
+                title = (
+                    soup.title.get_text(" ", strip=True)
+                    if soup.title
+                    else ""
+                )
+                if (
+                    "รอสักครู่" in title
+                    or "just a moment" in title.lower()
+                ):
+                    raise RuntimeError("เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต")
+                numbers = extract_numbers(soup)
+                if len(numbers) < 2:
+                    raise RuntimeError(
+                        f"ไม่พบชุดผลรางวัล (title={title!r})"
+                    )
+                draw_date = extract_draw_date(soup, now)
+                main_number, top3, bottom2 = normalize_result(key, numbers)
             numbers_changed = result_differs_from_latest(
                 data[key],
                 main_number,
