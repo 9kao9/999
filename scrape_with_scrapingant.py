@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 
 PAGES = {
     "government": "https://exphuay.com/result/goverment",
-    "lao": "https://exphuay.com/result/laosdevelops",
+    "lao": "https://laodl.com/api/website/laolot/WinPrizeHistory?type=1",
     "hanoi_special": "https://www.xsthm.com/result",
     "hanoi_normal": "https://www.minhngoc.net.vn/ket-qua-xo-so/mien-bac.html",
     "hanoi_vip": "https://www.mlnhngoc.net/mlnhngoc",
@@ -250,6 +250,43 @@ def parse_mlnhngoc_vip(payload: dict) -> tuple[str, str, str, str]:
     )
 
 
+def parse_laodl_result(
+    payload: dict,
+    expected_date: str,
+) -> tuple[str, str, str, str]:
+    """Read today's six-digit Lao Development Lottery result."""
+    results = payload.get("resultData")
+    if not isinstance(results, list):
+        raise RuntimeError("laodl.com: result list is missing")
+
+    today_result = next(
+        (
+            item
+            for item in results
+            if isinstance(item, dict)
+            and str(item.get("roundDate", ""))[:10] == expected_date
+        ),
+        None,
+    )
+    if not today_result:
+        raise RuntimeError(
+            f"laodl.com: no draw dated {expected_date} yet"
+        )
+
+    main_number = digits_only(str(today_result.get("winNumber", "")))
+    if len(main_number) != 6:
+        raise RuntimeError(
+            f"laodl.com: draw {expected_date} is waiting for its result"
+        )
+
+    return (
+        expected_date,
+        main_number,
+        main_number[-3:],
+        main_number[2:4],
+    )
+
+
 def parse_minhngoc_normal(html: str) -> tuple[str, str, str, str]:
     """Read the newest Northern Vietnam draw from Minh Ngoc.
 
@@ -284,12 +321,12 @@ def parse_minhngoc_normal(html: str) -> tuple[str, str, str, str]:
     return draw_date.isoformat(), main_number, top3, bottom2
 
 
-def require_current_hanoi_date(
+def require_current_direct_date(
     key: str,
     draw_date: str,
     now: datetime,
 ) -> None:
-    """Reject a stale Hanoi result instead of publishing it as today's draw."""
+    """Reject a stale direct result instead of publishing it as today's draw."""
     expected = now.date().isoformat()
     if draw_date != expected:
         raise RuntimeError(
@@ -619,7 +656,17 @@ def main() -> int:
 
     for key, url in selected_pages.items():
         try:
-            if key == "hanoi_special":
+            if key == "lao":
+                payload = fetch_direct_json(url)
+                draw_date, main_number, top3, bottom2 = parse_laodl_result(
+                    payload,
+                    now.date().isoformat(),
+                )
+                print(
+                    "[lao] fetched directly from laodl.com "
+                    "(0 ScrapingAnt credits)"
+                )
+            elif key == "hanoi_special":
                 payload = fetch_direct_json(url)
                 draw_date, main_number, top3, bottom2 = (
                     parse_xsthm_special(payload)
@@ -666,8 +713,13 @@ def main() -> int:
                     )
                 draw_date = extract_draw_date(soup, now)
                 main_number, top3, bottom2 = normalize_result(key, numbers)
-            if key in {"hanoi_special", "hanoi_normal", "hanoi_vip"}:
-                require_current_hanoi_date(key, draw_date, now)
+            if key in {
+                "lao",
+                "hanoi_special",
+                "hanoi_normal",
+                "hanoi_vip",
+            }:
+                require_current_direct_date(key, draw_date, now)
             numbers_changed = result_differs_from_latest(
                 data[key],
                 main_number,
