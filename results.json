@@ -159,6 +159,14 @@
   ],
   "hanoi_vip": [
     {
+      "date": "2026-08-02",
+      "time": "21:34",
+      "status": "out",
+      "main": "39431",
+      "top3": "431",
+      "bottom2": "43"
+    },
+    {
       "date": "2026-08-01",
       "time": "19:42",
       "status": "out",
@@ -213,11 +221,11 @@
     "requested": [
       "hanoi_vip"
     ],
-    "last_run": "2026-08-02T20:45:41+07:00",
-    "updated": [],
-    "errors": {
-      "hanoi_vip": "เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต"
-    }
+    "last_run": "2026-08-02T21:34:25+07:00",
+    "updated": [
+      "hanoi_vip"
+    ],
+    "errors": {}
   },
   "government": [
     {
