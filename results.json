@@ -93,6 +93,14 @@
   ],
   "hanoi_normal": [
     {
+      "date": "2026-08-02",
+      "time": "20:30",
+      "status": "out",
+      "main": "11909",
+      "top3": "909",
+      "bottom2": "83"
+    },
+    {
       "date": "2026-08-01",
       "time": "18:38",
       "status": "out",
@@ -195,13 +203,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "hanoi_normal"
     ],
-    "last_run": "2026-08-02T20:25:37+07:00",
-    "updated": [],
-    "errors": {
-      "hanoi_vip": "เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต"
-    }
+    "last_run": "2026-08-02T20:30:20+07:00",
+    "updated": [
+      "hanoi_normal"
+    ],
+    "errors": {}
   },
   "government": [
     {
