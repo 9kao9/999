@@ -23,9 +23,9 @@ PAGES = {
     "hanoi_special": "https://www.xsthm.com/result",
     "hanoi_normal": "https://www.minhngoc.net.vn/ket-qua-xo-so/mien-bac.html",
     "hanoi_vip": "https://www.mlnhngoc.net/mlnhngoc",
-    "dow": "https://exphuay.com/result/dji",
-    "nikkei_morning": "https://exphuay.com/result/nikkei-morning",
-    "nikkei_afternoon": "https://exphuay.com/result/nikkei-afternoon",
+    "dow": "https://www.msn.com/en-us/money/indexdetails/fi-a6qja2",
+    "nikkei_morning": "https://indexes.nikkei.co.jp/en/nkave",
+    "nikkei_afternoon": "https://indexes.nikkei.co.jp/en/nkave",
     "thai_stock": "https://exphuay.com/result/set",
 }
 
@@ -194,6 +194,110 @@ def fetch_direct_json(target_url: str) -> dict:
     if not isinstance(payload, dict):
         raise RuntimeError("result endpoint returned invalid JSON")
     return payload
+
+
+def parse_msn_dow(html: str) -> tuple[str, str, str, str]:
+    """Read the closed Dow value and change from MSN Money.
+
+    Lottery conversion:
+    - top 3 = last digit of the five-digit index + its two decimals
+    - bottom 2 = two decimals of the signed change shown after ``at close``
+    - main = top 3 followed by bottom 2
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    page_text = soup.get_text(" ", strip=True)
+    page_text = re.sub(r"[\u200e\u200f\u202a-\u202e\u2066-\u2069]", "", page_text)
+    page_text = re.sub(r"\s+", " ", page_text)
+
+    if "DOW (DJI)" not in page_text:
+        raise RuntimeError("MSN: ไม่พบหัวข้อ DOW (DJI)")
+
+    match = re.search(
+        r"(?P<index>\d{1,3}(?:,\d{3})+\.\d{2})\s+"
+        r"at close\s+"
+        r"(?P<change>[+\-−]\s*\d[\d,]*\.\d{2})"
+        r".{0,160}?as of\s+"
+        r"(?P<date>\d{1,2}/\d{1,2}/\d{4})",
+        page_text,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        raise RuntimeError("MSN: ไม่พบดัชนี ค่า at close หรือวันที่ as of ครบชุด")
+
+    index_value = match.group("index")
+    index_integer, index_decimals = index_value.replace(",", "").split(".")
+    if len(index_integer) != 5 or len(index_decimals) != 2:
+        raise RuntimeError(f"MSN: รูปแบบดัชนีไม่ใช่เลข 5 หลักและทศนิยม 2 หลัก: {index_value}")
+
+    change_value = match.group("change").replace(" ", "").replace("−", "-")
+    change_decimals = change_value.rsplit(".", 1)[-1]
+    if len(change_decimals) != 2:
+        raise RuntimeError(f"MSN: รูปแบบค่าเปลี่ยนแปลงไม่ถูกต้อง: {change_value}")
+
+    try:
+        draw_date = datetime.strptime(match.group("date"), "%m/%d/%Y").date()
+    except ValueError as exc:
+        raise RuntimeError(f"MSN: วันที่ as of ไม่ถูกต้อง: {match.group('date')}") from exc
+
+    top3 = index_integer[-1] + index_decimals
+    bottom2 = change_decimals
+    main_number = top3 + bottom2
+    return draw_date.isoformat(), main_number, top3, bottom2
+
+
+def parse_nikkei_225(html: str) -> tuple[str, str, str, str]:
+    """Read the main Nikkei 225 value and its change from the official site.
+
+    Lottery conversion:
+    - top 3 = last digit of the index integer + its two decimals
+    - bottom 2 = two decimals of the signed index change
+    - main = top 3 followed by bottom 2
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    page_text = soup.get_text(" ", strip=True)
+    page_text = re.sub(r"[\u200e\u200f\u202a-\u202e\u2066-\u2069]", "", page_text)
+    page_text = re.sub(r"\s+", " ", page_text)
+
+    match = re.search(
+        r"Nikkei\s+225\s+"
+        r"(?P<date>[A-Za-z]{3}/\d{1,2}/\d{4})"
+        r"\s*(?:\([^)]*\))?\s+"
+        r"(?P<index>\d{1,3}(?:,\d{3})+\.\d{2})\s+"
+        r"(?P<change>[+\-−]\s*\d[\d,]*\.\d{2})\s+"
+        r"[+\-−]\s*\d[\d,]*\.\d+%",
+        page_text,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        raise RuntimeError(
+            "Nikkei: ไม่พบวันที่ ค่าดัชนีหลัก และค่าเปลี่ยนแปลงในหัวข้อ Nikkei 225"
+        )
+
+    index_value = match.group("index")
+    index_integer, index_decimals = index_value.replace(",", "").split(".")
+    if len(index_integer) != 5 or len(index_decimals) != 2:
+        raise RuntimeError(
+            f"Nikkei: รูปแบบดัชนีไม่ใช่เลข 5 หลักและทศนิยม 2 หลัก: {index_value}"
+        )
+
+    change_value = match.group("change").replace(" ", "").replace("−", "-")
+    change_decimals = change_value.rsplit(".", 1)[-1]
+    if len(change_decimals) != 2:
+        raise RuntimeError(
+            f"Nikkei: รูปแบบค่าเปลี่ยนแปลงไม่ถูกต้อง: {change_value}"
+        )
+
+    try:
+        draw_date = datetime.strptime(match.group("date"), "%b/%d/%Y").date()
+    except ValueError as exc:
+        raise RuntimeError(
+            f"Nikkei: วันที่กำกับดัชนีไม่ถูกต้อง: {match.group('date')}"
+        ) from exc
+
+    top3 = index_integer[-1] + index_decimals
+    bottom2 = change_decimals
+    main_number = top3 + bottom2
+    return draw_date.isoformat(), main_number, top3, bottom2
 
 
 def parse_xsthm_special(payload: dict) -> tuple[str, str, str, str]:
@@ -693,6 +797,35 @@ def main() -> int:
                     "[hanoi_normal] fetched directly from Minh Ngoc "
                     "(0 ScrapingAnt credits)"
                 )
+            elif key == "dow":
+                try:
+                    html = fetch_direct_html(url)
+                    draw_date, main_number, top3, bottom2 = parse_msn_dow(html)
+                    print("[dow] fetched directly from MSN (0 ScrapingAnt credits)")
+                except Exception as direct_error:
+                    print(
+                        f"[dow] direct MSN request failed ({direct_error}); "
+                        "retrying through ScrapingAnt...",
+                        file=sys.stderr,
+                    )
+                    html = fetch_html(api_key, url, True)
+                    draw_date, main_number, top3, bottom2 = parse_msn_dow(html)
+            elif key in {"nikkei_morning", "nikkei_afternoon"}:
+                try:
+                    html = fetch_direct_html(url)
+                    draw_date, main_number, top3, bottom2 = parse_nikkei_225(html)
+                    print(
+                        f"[{key}] fetched directly from Nikkei 225 official site "
+                        "(0 ScrapingAnt credits)"
+                    )
+                except Exception as direct_error:
+                    print(
+                        f"[{key}] direct Nikkei request failed ({direct_error}); "
+                        "retrying through ScrapingAnt...",
+                        file=sys.stderr,
+                    )
+                    html = fetch_html(api_key, url, True)
+                    draw_date, main_number, top3, bottom2 = parse_nikkei_225(html)
             else:
                 html = fetch_html(api_key, url, render_javascript)
                 soup = BeautifulSoup(html, "html.parser")
@@ -718,6 +851,8 @@ def main() -> int:
                 "hanoi_special",
                 "hanoi_normal",
                 "hanoi_vip",
+                "nikkei_morning",
+                "nikkei_afternoon",
             }:
                 require_current_direct_date(key, draw_date, now)
             numbers_changed = result_differs_from_latest(
@@ -727,11 +862,6 @@ def main() -> int:
                 bottom2,
             ) or was_updated_today(data, key, now)
             if key == "dow":
-                draw_date = correct_dow_draw_date(
-                    draw_date,
-                    now,
-                    numbers_changed,
-                )
                 data[key] = remove_recent_duplicate_result(
                     data[key],
                     draw_date,
