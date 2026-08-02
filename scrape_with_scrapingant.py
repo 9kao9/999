@@ -22,7 +22,7 @@ PAGES = {
     "lao": "https://exphuay.com/result/laosdevelops",
     "hanoi_special": "https://www.xsthm.com/result",
     "hanoi_normal": "https://www.minhngoc.net.vn/ket-qua-xo-so/mien-bac.html",
-    "hanoi_vip": "https://exphuay.com/result/mlnhngo",
+    "hanoi_vip": "https://www.mlnhngoc.net/mlnhngoc",
     "dow": "https://exphuay.com/result/dji",
     "nikkei_morning": "https://exphuay.com/result/nikkei-morning",
     "nikkei_afternoon": "https://exphuay.com/result/nikkei-afternoon",
@@ -222,6 +222,34 @@ def parse_xsthm_special(payload: dict) -> tuple[str, str, str, str]:
     )
 
 
+def parse_mlnhngoc_vip(payload: dict) -> tuple[str, str, str, str]:
+    """Read Hanoi VIP from mlnhngoc.net's public current-result endpoint."""
+    item = payload.get("item")
+    label = str(payload.get("label", "")).strip()
+    if not isinstance(item, dict):
+        raise RuntimeError("mlnhngoc.net: latest draw is incomplete")
+
+    main_number = digits_only(str(item.get("ran26", "")))
+    first_prize = digits_only(str(item.get("ran0", "")))
+    if len(main_number) != 5 or len(first_prize) != 5:
+        raise RuntimeError(
+            "mlnhngoc.net: special or first prize is not complete"
+        )
+    try:
+        draw_date = datetime.strptime(label, "%d-%m-%Y").date()
+    except ValueError as exc:
+        raise RuntimeError(
+            f"mlnhngoc.net: invalid draw date {label!r}"
+        ) from exc
+
+    return (
+        draw_date.isoformat(),
+        main_number,
+        main_number[-3:],
+        first_prize[-2:],
+    )
+
+
 def parse_minhngoc_normal(html: str) -> tuple[str, str, str, str]:
     """Read the newest Northern Vietnam draw from Minh Ngoc.
 
@@ -254,6 +282,19 @@ def parse_minhngoc_normal(html: str) -> tuple[str, str, str, str]:
     top3 = main_number[-3:]
     bottom2 = first_match.group(1)[-2:]
     return draw_date.isoformat(), main_number, top3, bottom2
+
+
+def require_current_hanoi_date(
+    key: str,
+    draw_date: str,
+    now: datetime,
+) -> None:
+    """Reject a stale Hanoi result instead of publishing it as today's draw."""
+    expected = now.date().isoformat()
+    if draw_date != expected:
+        raise RuntimeError(
+            f"{key}: source draw date is {draw_date}; waiting for {expected}"
+        )
 
 
 def extract_numbers(soup: BeautifulSoup) -> list[str]:
@@ -587,6 +628,15 @@ def main() -> int:
                     "[hanoi_special] fetched directly from xsthm.com "
                     "(0 ScrapingAnt credits)"
                 )
+            elif key == "hanoi_vip":
+                payload = fetch_direct_json(url)
+                draw_date, main_number, top3, bottom2 = (
+                    parse_mlnhngoc_vip(payload)
+                )
+                print(
+                    "[hanoi_vip] fetched directly from mlnhngoc.net "
+                    "(0 ScrapingAnt credits)"
+                )
             elif key == "hanoi_normal":
                 html = fetch_direct_html(url)
                 draw_date, main_number, top3, bottom2 = (
@@ -616,6 +666,8 @@ def main() -> int:
                     )
                 draw_date = extract_draw_date(soup, now)
                 main_number, top3, bottom2 = normalize_result(key, numbers)
+            if key in {"hanoi_special", "hanoi_normal", "hanoi_vip"}:
+                require_current_hanoi_date(key, draw_date, now)
             numbers_changed = result_differs_from_latest(
                 data[key],
                 main_number,
