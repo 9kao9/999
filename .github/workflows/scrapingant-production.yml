@@ -114,12 +114,28 @@ jobs:
               if start <= minute <= end and not has_date(key, today):
                   due.append(key)
 
+          # If ExpHuay/Cloudflare has just blocked a lottery, wait 30 minutes
+          # before trying that same lottery again. n8n can still wake this
+          # workflow every 5 minutes without repeatedly spending browser
+          # credits during a temporary block.
+          recent_failures = set()
+          meta = data.get("_meta", {})
+          try:
+              last_run = datetime.fromisoformat(meta.get("last_run", ""))
+              if now - last_run < timedelta(minutes=30):
+                  recent_failures = set(meta.get("errors", {}))
+          except (TypeError, ValueError):
+              pass
+          cooling_down = [key for key in due if key in recent_failures]
+          due = [key for key in due if key not in recent_failures]
+
           keys = ",".join(dict.fromkeys(due))
           print(f"keys={keys}")
           print(f"should_run={'true' if keys else 'false'}")
           print(
               f"notice=เวลาไทย {now:%Y-%m-%d %H:%M}; "
-              f"รายการที่ต้องดึง: {keys or 'ไม่มี'}"
+              f"รายการที่ต้องดึง: {keys or 'ไม่มี'}; "
+              f"พักหลังถูกบล็อก: {','.join(cooling_down) or 'ไม่มี'}"
           )
           PY
 
