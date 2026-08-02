@@ -195,13 +195,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "hanoi_special"
     ],
-    "last_run": "2026-08-01T19:42:28+07:00",
-    "updated": [
-      "hanoi_vip"
-    ],
-    "errors": {}
+    "last_run": "2026-08-02T17:35:42+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_special": "เว็บไซต์ต้นทางแสดงหน้าป้องกันบอต"
+    }
   },
   "government": [
     {
