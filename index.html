@@ -40,8 +40,8 @@
     :root[data-theme="light"] .stock-row{background:var(--panel)}.stock-row::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--accent)}.stock-name{display:flex;align-items:center;justify-content:center;gap:11px;font-weight:700;font-size:18px;text-align:center}.flag{display:inline-grid;place-items:center;min-width:34px;font-size:27px;filter:drop-shadow(0 4px 7px rgba(0,0,0,.28))}.stock-time{color:var(--muted)}.stock-main-cell{text-align:center}.stock-main{color:#48e2c0;font:700 29px "Kanit",sans-serif;letter-spacing:.08em;text-align:center}.stock-value{font:700 20px "Kanit",sans-serif}.mobile-label{display:none;color:var(--muted);font-size:10px;font-weight:500;margin-bottom:3px}.countdown{color:var(--orange);font:600 13px "Kanit",sans-serif}
     .history-box{margin-top:24px;border:1px solid var(--line);border-radius:18px;background:rgba(13,20,51,.75);padding:18px;box-shadow:var(--shadow)}
     :root[data-theme="light"] .history-box{background:var(--panel)}.history-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.history-head h2{display:flex;align-items:center;gap:10px;font-size:24px;margin:0}.history-controls{display:flex;gap:8px}.history-controls select{border:1px solid var(--line);background:var(--soft);color:var(--text);border-radius:10px;padding:8px 10px}.table-shell{position:relative}.table-wrap{overflow:auto;scrollbar-width:thin}table{width:100%;border-collapse:collapse;min-width:660px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}th{font-size:12px;color:var(--muted);font-weight:500}td.number{font-family:"Kanit",sans-serif;font-weight:700}.table-swipe-guide,.scroll-cue{display:none}
-    .affiliate-popup{position:fixed;z-index:100;inset:0;display:grid;place-items:center;padding:18px;background:rgba(2,5,20,.76);backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s}.affiliate-popup.open{opacity:1;visibility:visible}.affiliate-card{position:relative;width:min(430px,100%);overflow:hidden;border:1px solid rgba(255,201,52,.58);border-radius:24px;padding:28px;background:radial-gradient(circle at 90% 5%,rgba(242,43,162,.32),transparent 38%),linear-gradient(145deg,#151c46,#090d29);box-shadow:0 28px 90px rgba(0,0,0,.52);text-align:center;transform:translateY(14px) scale(.98);transition:transform .22s}.affiliate-popup.open .affiliate-card{transform:none}.affiliate-close{position:absolute;top:10px;right:11px;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:rgba(7,11,37,.82);color:#fff;font-size:23px;line-height:1;cursor:pointer}.affiliate-icon{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 13px;border-radius:21px;background:linear-gradient(145deg,#ffcf35,#ff7a25);box-shadow:0 10px 30px rgba(255,151,37,.3);font-size:35px}.affiliate-eyebrow{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.04em}.affiliate-card h2{margin:5px 0 6px;font-size:27px}.affiliate-card p{margin:0 auto 18px;max-width:340px;color:var(--muted);font-size:14px}.affiliate-button{display:flex;align-items:center;justify-content:center;min-height:50px;border-radius:15px;background:linear-gradient(100deg,#ff2d91,#7c3cff);color:#fff;text-decoration:none;font-weight:700;box-shadow:0 10px 28px rgba(213,43,173,.28)}.affiliate-note{display:block;margin-top:12px;color:var(--muted);font-size:10px}
-    :root[data-theme="light"] .affiliate-card{background:radial-gradient(circle at 90% 5%,rgba(242,43,162,.14),transparent 38%),#fff}.empty{color:var(--muted);padding:28px;text-align:center}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}.loading{opacity:.45}.hide{display:none!important}
+    .affiliate-popup{display:none!important}
+    .empty{color:var(--muted);padding:28px;text-align:center}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}.loading{opacity:.45}.hide{display:none!important}
     .line-float{position:fixed;z-index:90;right:max(14px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:5px;color:#fff;text-decoration:none;filter:drop-shadow(0 10px 22px rgba(0,0,0,.4));transition:transform .2s}.line-float:hover{transform:translateY(-4px)}.line-float:focus-visible{outline:3px solid var(--cyan);outline-offset:5px;border-radius:18px}.line-float-label{padding:5px 10px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:linear-gradient(100deg,#ed1b24,#b20e77);box-shadow:0 5px 16px rgba(218,21,77,.35);font-size:12px;font-weight:700;white-space:nowrap;animation:lineLabelPulse 1.15s ease-in-out infinite}.line-float-image{display:block;width:var(--line-button-size);height:var(--line-button-size);border:3px solid #fff;border-radius:50%;background:#fff;object-fit:cover;box-shadow:0 0 0 3px rgba(32,207,101,.9),0 10px 25px rgba(0,0,0,.35)}
     @media(max-width:620px){.line-float-image{width:var(--line-button-size-mobile);height:var(--line-button-size-mobile)}.line-float-label{font-size:11px;padding:4px 8px}}@keyframes lineLabelPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.96)}}@media(prefers-reduced-motion:reduce){.line-float,.line-float-label{animation:none;transition:none}}
     @media(max-width:900px){.app{width:min(100% - 22px,760px);padding-top:24px}.featured{grid-template-columns:1fr}.lottery-grid{grid-template-columns:repeat(2,1fr)}.stock-header{display:none}.stock-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:13px}.stock-name{grid-column:1/-1;padding:1px 2px 6px}.stock-cell{min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--soft)}.stock-main-cell{grid-column:1/-1}.mobile-label{display:block}.stock-time{color:var(--text)}.stock-time strong{font-weight:600}.stock-status .status{width:100%;justify-content:center}.hero-card{min-height:230px}}
@@ -116,18 +116,6 @@
     <p class="footer">ข้อมูลผลรางวัลใช้เพื่อการตรวจสอบเท่านั้น โปรดตรวจสอบกับแหล่งประกาศอย่างเป็นทางการอีกครั้ง</p>
   </main>
 
-  <div class="affiliate-popup" id="affiliate-popup" role="dialog" aria-modal="true" aria-labelledby="affiliate-title" aria-hidden="true">
-    <div class="affiliate-card">
-      <button class="affiliate-close" id="affiliate-close" type="button" aria-label="ปิดป๊อปอัป">×</button>
-      <div class="affiliate-icon" aria-hidden="true">🛍️</div>
-      <div class="affiliate-eyebrow">ลิงก์แนะนำสินค้า</div>
-      <h2 id="affiliate-title">เลือกซื้อสินค้าบน Lazada</h2>
-      <p>ดูสินค้าและโปรโมชันที่น่าสนใจผ่านลิงก์แนะนำของเว็บไซต์</p>
-      <a class="affiliate-button" id="affiliate-link" href="#" target="_blank" rel="sponsored noopener noreferrer">เปิดดูสินค้าบน Lazada</a>
-      <small class="affiliate-note">เว็บไซต์อาจได้รับค่าคอมมิชชั่นจากการสั่งซื้อ โดยไม่มีค่าใช้จ่ายเพิ่มสำหรับคุณ</small>
-    </div>
-  </div>
-
   <a class="line-float" id="line-group-button" href="#" target="_blank" rel="noopener noreferrer" aria-label="เข้ากลุ่มลับทาง LINE">
     <span class="line-float-label">เข้ากลุ่มลับ คลิก</span>
     <img class="line-float-image" src="./secret-group.png" alt="" width="252" height="252">
@@ -149,10 +137,8 @@
       return AFFILIATE_URLS[randomIndex];
     }
 
-    // ดึงลิงก์จากการสุ่มมาใช้งาน
     const AFFILIATE_URL = getRandomAffLink();
 
-    const AFFILIATE_POPUP_COOLDOWN_MS=12*60*60*1000;
     const TYPES=[
       {id:"government",name:"หวยรัฐบาลไทย",group:"government",icon:"🇹🇭",days:[1,16],hour:16,minute:0,color:"#ffc934"},
       {id:"lao",name:"หวยลาวพัฒนา",group:"regional",icon:"🇱🇦",weekdays:[1,2,3,4,5],hour:20,minute:30,color:"#ec31af",six:true,top2:true},
@@ -200,60 +186,36 @@
     async function load(){try{const r=await fetch(`${DATA_URL}?_=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw Error(r.status);DATA=await r.json();render();lastPriorityMinute=Math.floor(Date.now()/60000)}catch(e){document.querySelectorAll(".view").forEach(v=>v.classList.add("loading"));$("#view-latest").insertAdjacentHTML("afterbegin",`<div class="empty">โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>`)}}
     function updateClock(){const p=bangkokParts();const y=+p.year,m=+p.month,d=+p.day;$("#today-label").textContent=new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)));$("#clock").textContent=`${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)} น.`;updateCountdowns();const minute=Math.floor(Date.now()/60000);if(minute!==lastPriorityMinute&&Object.keys(DATA).length){lastPriorityMinute=minute;render()}}
     function switchView(button){const view=document.getElementById(`view-${button.dataset.view}`);if(!view)return;document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v===view));window.scrollTo({top:0,behavior:"smooth"})}
-    function setupAffiliatePopup(){
-      const popup=$("#affiliate-popup"),close=$("#affiliate-close"),link=$("#affiliate-link"),storageKey="affiliatePopupLastShown";
-      if(!popup||!close||!link)return;
-      link.href=AFFILIATE_URL;
-      const hide=()=>{popup.classList.remove("open");popup.setAttribute("aria-hidden","true")};
-      close.addEventListener("click",hide);
-      popup.addEventListener("click",event=>{if(event.target===popup)hide()});
-      document.addEventListener("keydown",event=>{if(event.key==="Escape")hide()});
-      let lastShown=0;
-      try{lastShown=Number(localStorage.getItem(storageKey)||0)}catch{}
-      if(Date.now()-lastShown<AFFILIATE_POPUP_COOLDOWN_MS)return;
-      setTimeout(()=>{
-        popup.classList.add("open");
-        popup.setAttribute("aria-hidden","false");
-        close.focus();
-        try{localStorage.setItem(storageKey,String(Date.now()))}catch{}
-      },1500);
-    }
+
     document.querySelectorAll("#nav button[data-view]").forEach(button=>button.addEventListener("click",()=>switchView(button)));
     $("#line-group-button").href=LINE_GROUP_URL;
-    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);setupAffiliatePopup();
+    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);
 
-    // --- แทรกโค้ด Popunder ตรงนี้ ---
-// --- ระบบ Popunder (ทำงาน 1 ครั้ง ทุกๆ 2 ชั่วโมง) ---
+    // --- ระบบ Popunder (ทำงาน 1 ครั้ง ทุกๆ 2 ชั่วโมง) ---
     (function setupPopunder() {
       const affUrl = AFFILIATE_URL;
       const storageKey = "popunder_last_opened";
-      const COOLDOWN_MS = 2 * 60 * 60 * 1000; // ตั้งเวลาคูลดาวน์ 2 ชั่วโมง (ในหน่วยมิลลิวินาที)
+      const COOLDOWN_MS = 2 * 60 * 60 * 1000;
 
       let lastOpened = 0;
       try {
         lastOpened = Number(localStorage.getItem(storageKey) || 0);
       } catch (e) {}
 
-      // ถ้ายังไม่ครบ 2 ชั่วโมงนับจากครั้งล่าสุด ให้ยกเลิกการทำงาน
       if (Date.now() - lastOpened < COOLDOWN_MS) return;
 
       function handleGlobalClick(e) {
-        // สั่งเปิด Tab ใหม่เข้าลิงก์ Affiliate
         window.open(affUrl, "_blank");
 
-        // บันทึกเวลาปัจจุบันที่กดไว้ในเครื่องผู้ใช้
         try {
           localStorage.setItem(storageKey, String(Date.now()));
         } catch (e) {}
 
-        // ลบ Event Listener ออกทันทีเพื่อไม่ให้เด้งซ้ำในการคลิกครั้งถัดไป
         document.removeEventListener("click", handleGlobalClick, true);
       }
 
-      // ดักจับการแตะ/คลิกครั้งแรกบนหน้าจอ
       document.addEventListener("click", handleGlobalClick, true);
     })();
-	
   </script>
 </body>
 </html>
