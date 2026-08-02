@@ -91,10 +91,12 @@ jobs:
           if weekday <= 4:
               # เปิดช่วงติดตามต่อถึง 18:00 น. เผื่อ GitHub เลื่อนหรือข้าม
               # scheduled run หลังเวลาออก โดยไม่เสียเครดิตเมื่อมีผลแล้ว
-              if 573 <= minute <= 1080 and not has_date("nikkei_morning", today):
+              # เริ่มดึงนิเคอิเช้าเวลา 09:35 น. ตามเวลาประเทศไทย
+              if 575 <= minute <= 1080 and not has_date("nikkei_morning", today):
                   due.append("nikkei_morning")
               # ติดตามต่อถึง 18:00 น. เผื่อ scheduled run ถูก GitHub เลื่อน
-              if 783 <= minute <= 1080 and not has_date("nikkei_afternoon", today):
+              # เริ่มดึงนิเคอิบ่ายเวลา 13:20 น. ตามเวลาประเทศไทย
+              if 800 <= minute <= 1080 and not has_date("nikkei_afternoon", today):
                   due.append("nikkei_afternoon")
               if 1008 <= minute <= 1110 and not has_date("thai_stock", today):
                   due.append("thai_stock")
