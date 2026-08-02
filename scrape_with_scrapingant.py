@@ -88,27 +88,53 @@ def fetch_html(
         f"{target_url}#_scrape_ts="
         f"{int(datetime.now(timezone.utc).timestamp())}"
     )
-    attempts = (cache_busted_url, target_url)
+    # HTTP 423 means the target detected ScrapingAnt's current browser.
+    # Every request rotates the datacenter IP. Retry once, then use the
+    # inexpensive non-browser request as the final fallback.
+    attempts = [
+        (cache_busted_url, render_javascript, "JavaScript attempt 1"),
+        (target_url, render_javascript, "JavaScript attempt 2"),
+    ]
+    if render_javascript:
+        attempts.append((target_url, False, "lightweight fallback"))
     last_html = ""
 
-    for attempt_url in attempts:
+    for attempt_number, (attempt_url, use_browser, label) in enumerate(
+        attempts,
+        start=1,
+    ):
         response = requests.get(
             SCRAPINGANT_ENDPOINT,
             params={
                 "x-api-key": api_key,
                 "url": attempt_url,
-                "browser": "true" if render_javascript else "false",
+                "browser": "true" if use_browser else "false",
+                "proxy_type": "datacenter",
                 "timeout": "60",
             },
             timeout=90,
         )
+        credit_cost = response.headers.get("Ant-credits-cost")
+        credit_note = f", credits={credit_cost}" if credit_cost else ""
         if not response.ok:
             detail = response.text.strip().replace("\n", " ")[:500]
+            if response.status_code == 423 and attempt_number < len(attempts):
+                next_label = attempts[attempt_number][2]
+                print(
+                    f"ScrapingAnt blocked {label} with HTTP 423{credit_note}; "
+                    f"retrying with {next_label}...",
+                    file=sys.stderr,
+                )
+                continue
             raise RuntimeError(
                 f"ScrapingAnt HTTP {response.status_code}: {detail}"
             )
 
         last_html = response.text
+        print(
+            f"ScrapingAnt succeeded with {label}{credit_note}",
+            file=sys.stderr,
+        )
         title_match = re.search(
             r"<title[^>]*>(.*?)</title>",
             last_html,
