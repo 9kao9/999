@@ -94,7 +94,7 @@
   "hanoi_normal": [
     {
       "date": "2026-08-02",
-      "time": "20:30",
+      "time": "20:32",
       "status": "out",
       "main": "11909",
       "top3": "909",
@@ -203,13 +203,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "hanoi_normal"
     ],
-    "last_run": "2026-08-02T20:30:43+07:00",
-    "updated": [],
-    "errors": {
-      "hanoi_vip": "ScrapingAnt HTTP 423: {\"detail\":\"Our browser was detected by target site. Retry the request or try adjusting proxy country, proxy type and browser rendering settings. Our documentation: https://docs.scrapingant.com/ and support email: support@scrapingant.com\"}"
-    }
+    "last_run": "2026-08-02T20:32:03+07:00",
+    "updated": [
+      "hanoi_normal"
+    ],
+    "errors": {}
   },
   "government": [
     {
