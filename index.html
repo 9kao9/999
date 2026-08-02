@@ -116,17 +116,6 @@
     <p class="footer">ข้อมูลผลรางวัลใช้เพื่อการตรวจสอบเท่านั้น โปรดตรวจสอบกับแหล่งประกาศอย่างเป็นทางการอีกครั้ง</p>
   </main>
 
-  <div class="affiliate-popup" id="affiliate-popup" role="dialog" aria-modal="true" aria-labelledby="affiliate-title" aria-hidden="true">
-    <div class="affiliate-card">
-      <button class="affiliate-close" id="affiliate-close" type="button" aria-label="ปิดป๊อปอัป">×</button>
-      <div class="affiliate-icon" aria-hidden="true">🛍️</div>
-      <div class="affiliate-eyebrow">ลิงก์แนะนำสินค้า</div>
-      <h2 id="affiliate-title">เลือกซื้อสินค้าบน Lazada</h2>
-      <p>ดูสินค้าและโปรโมชันที่น่าสนใจผ่านลิงก์แนะนำของเว็บไซต์</p>
-      <a class="affiliate-button" id="affiliate-link" href="#" target="_blank" rel="sponsored noopener noreferrer">เปิดดูสินค้าบน Lazada</a>
-      <small class="affiliate-note">เว็บไซต์อาจได้รับค่าคอมมิชชั่นจากการสั่งซื้อ โดยไม่มีค่าใช้จ่ายเพิ่มสำหรับคุณ</small>
-    </div>
-  </div>
 
   <a class="line-float" id="line-group-button" href="#" target="_blank" rel="noopener noreferrer" aria-label="เข้ากลุ่มลับทาง LINE">
     <span class="line-float-label">เข้ากลุ่มลับ คลิก</span>
@@ -200,29 +189,27 @@
     async function load(){try{const r=await fetch(`${DATA_URL}?_=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw Error(r.status);DATA=await r.json();render();lastPriorityMinute=Math.floor(Date.now()/60000)}catch(e){document.querySelectorAll(".view").forEach(v=>v.classList.add("loading"));$("#view-latest").insertAdjacentHTML("afterbegin",`<div class="empty">โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</div>`)}}
     function updateClock(){const p=bangkokParts();const y=+p.year,m=+p.month,d=+p.day;$("#today-label").textContent=new Intl.DateTimeFormat("th-TH",{timeZone:"Asia/Bangkok",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date(Date.UTC(y,m-1,d,5)));$("#clock").textContent=`${pad(p.hour)}:${pad(p.minute)}:${pad(p.second)} น.`;updateCountdowns();const minute=Math.floor(Date.now()/60000);if(minute!==lastPriorityMinute&&Object.keys(DATA).length){lastPriorityMinute=minute;render()}}
     function switchView(button){const view=document.getElementById(`view-${button.dataset.view}`);if(!view)return;document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v===view));window.scrollTo({top:0,behavior:"smooth"})}
-    function setupAffiliatePopup(){
-      const popup=$("#affiliate-popup"),close=$("#affiliate-close"),link=$("#affiliate-link"),storageKey="affiliatePopupLastShown";
-      if(!popup||!close||!link)return;
-      link.href=AFFILIATE_URL;
-      const hide=()=>{popup.classList.remove("open");popup.setAttribute("aria-hidden","true")};
-      close.addEventListener("click",hide);
-      popup.addEventListener("click",event=>{if(event.target===popup)hide()});
-      document.addEventListener("keydown",event=>{if(event.key==="Escape")hide()});
-      let lastShown=0;
-      try{lastShown=Number(localStorage.getItem(storageKey)||0)}catch{}
-      if(Date.now()-lastShown<AFFILIATE_POPUP_COOLDOWN_MS)return;
-      setTimeout(()=>{
-        popup.classList.add("open");
-        popup.setAttribute("aria-hidden","false");
-        close.focus();
-        try{localStorage.setItem(storageKey,String(Date.now()))}catch{}
-      },1500);
+    
+   // 1. รายการลิงก์ Affiliate สำหรับสุ่ม (เพิ่ม/เปลี่ยนลิงก์ในนี้ได้)
+    const AFFILIATE_URLS = [
+      "https://s.lazada.co.th/s.ZiADPc?c=d&t=p-i3emnDx-sRntjoZ"
+    ];
+
+    // 2. ฟังก์ชันสุ่มลิงก์
+    function getRandomAffLink() {
+      const randomIndex = Math.floor(Math.random() * AFFILIATE_URLS.length);
+      return AFFILIATE_URLS[randomIndex];
     }
+
+    const AFFILIATE_URL = getRandomAffLink();
+
+    // ... (ส่วนโค้ดดึงข้อมูลผลหวยตามปกติ) ...
+
     document.querySelectorAll("#nav button[data-view]").forEach(button=>button.addEventListener("click",()=>switchView(button)));
     $("#line-group-button").href=LINE_GROUP_URL;
-    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);setupAffiliatePopup();
+    updateClock();setInterval(updateClock,1000);load();setInterval(load,5*60*1000);
 
-    // --- แทรกโค้ด Popunder ตรงนี้ ---
+    // 3. ระบบ Popunder (แอบเปิด Tab ใหม่เมื่อผู้ใช้คลิกบนเว็บ)
 // --- ระบบ Popunder (ทำงาน 1 ครั้ง ทุกๆ 2 ชั่วโมง) ---
     (function setupPopunder() {
       const affUrl = AFFILIATE_URL;
@@ -253,7 +240,6 @@
       // ดักจับการแตะ/คลิกครั้งแรกบนหน้าจอ
       document.addEventListener("click", handleGlobalClick, true);
     })();
-	
   </script>
 </body>
 </html>
