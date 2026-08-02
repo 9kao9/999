@@ -98,7 +98,8 @@ jobs:
                   due.append("nikkei_afternoon")
               if 1008 <= minute <= 1110 and not has_date("thai_stock", today):
                   due.append("thai_stock")
-              if 1233 <= minute <= 1320 and not has_date("lao", today):
+              # เริ่มตรวจหวยลาวหลังเวลาออก 1 นาที (20:31 น.)
+              if 1231 <= minute <= 1320 and not has_date("lao", today):
                   due.append("lao")
 
           if now.day in {1, 16} and 963 <= minute <= 1080:
@@ -130,6 +131,7 @@ jobs:
           # The three Hanoi sources are now direct and cost 0 credits, so they
           # may retry on every 5-minute wake until today's dated result exists.
           recent_failures -= {
+              "lao",
               "hanoi_special",
               "hanoi_normal",
               "hanoi_vip",
