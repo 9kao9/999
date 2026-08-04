@@ -251,13 +251,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_afternoon"
+      "thai_stock"
     ],
-    "last_run": "2026-08-04T13:20:24+07:00",
-    "updated": [
-      "nikkei_afternoon"
-    ],
-    "errors": {}
+    "last_run": "2026-08-04T16:50:23+07:00",
+    "updated": [],
+    "errors": {
+      "thai_stock": "SET50: ตลาดยังไม่แสดงสถานะ Closed"
+    }
   },
   "government": [
     {
