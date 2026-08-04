@@ -337,10 +337,14 @@ def parse_set_thai_stock(
     if not set_match:
         raise RuntimeError("SET: ไม่พบค่าดัชนีหลักและค่าความเปลี่ยนแปลง")
 
-    if not re.search(r"สถานะตลาด\s*:\s*Closed", set50_text, re.IGNORECASE):
-        raise RuntimeError("SET50: ตลาดยังไม่แสดงสถานะ Closed")
-    if not re.search(r"สถานะตลาด\s*:\s*Closed", set_text, re.IGNORECASE):
-        raise RuntimeError("SET: ตลาดยังไม่แสดงสถานะ Closed")
+    # SET currently reports a finished trading session as either "Closed" or
+    # "OffHour".  Treat both as final; other states may still contain intraday
+    # values and must not be saved as the evening result.
+    final_market_status = r"สถานะตลาด\s*:\s*(?:Closed|OffHour)\b"
+    if not re.search(final_market_status, set50_text, re.IGNORECASE):
+        raise RuntimeError("SET50: ตลาดยังไม่แสดงสถานะ Closed หรือ OffHour")
+    if not re.search(final_market_status, set_text, re.IGNORECASE):
+        raise RuntimeError("SET: ตลาดยังไม่แสดงสถานะ Closed หรือ OffHour")
 
     thai_short_months = {
         "ม.ค.": 1, "ก.พ.": 2, "มี.ค.": 3, "เม.ย.": 4,
