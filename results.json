@@ -253,11 +253,11 @@
     "requested": [
       "thai_stock"
     ],
-    "last_run": "2026-08-04T16:50:23+07:00",
-    "updated": [],
-    "errors": {
-      "thai_stock": "SET50: ตลาดยังไม่แสดงสถานะ Closed"
-    }
+    "last_run": "2026-08-04T17:22:18+07:00",
+    "updated": [
+      "thai_stock"
+    ],
+    "errors": {}
   },
   "government": [
     {
@@ -452,6 +452,14 @@
     }
   ],
   "thai_stock": [
+    {
+      "date": "2026-08-04",
+      "time": "17:22",
+      "status": "out",
+      "main": "41377",
+      "top3": "413",
+      "bottom2": "77"
+    },
     {
       "date": "2026-08-03",
       "time": "22:55",
