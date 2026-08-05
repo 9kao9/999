@@ -530,33 +530,34 @@ def parse_laodl_result(
     payload: dict,
     expected_date: str,
 ) -> tuple[str, str, str, str]:
-    """Read today's six-digit Lao Development Lottery result."""
+    """Read the newest completed Lao Development Lottery result.
+
+    laodl.com creates today's draw before the result is available, leaving its
+    ``winNumber`` empty.  Selecting that placeholder made recovery runs fail
+    and prevented a missed result from the previous draw being backfilled.
+    """
     results = payload.get("resultData")
     if not isinstance(results, list):
         raise RuntimeError("laodl.com: result list is missing")
 
-    today_result = next(
-        (
-            item
-            for item in results
-            if isinstance(item, dict)
-            and str(item.get("roundDate", ""))[:10] == expected_date
-        ),
-        None,
-    )
-    if not today_result:
+    completed: list[tuple[str, str]] = []
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        draw_date = str(item.get("roundDate", ""))[:10]
+        main_number = digits_only(str(item.get("winNumber", "")))
+        if draw_date <= expected_date and len(main_number) == 6:
+            completed.append((draw_date, main_number))
+
+    if not completed:
         raise RuntimeError(
-            f"laodl.com: no draw dated {expected_date} yet"
+            f"laodl.com: no completed draw on or before {expected_date}"
         )
 
-    main_number = digits_only(str(today_result.get("winNumber", "")))
-    if len(main_number) != 6:
-        raise RuntimeError(
-            f"laodl.com: draw {expected_date} is waiting for its result"
-        )
+    draw_date, main_number = max(completed, key=lambda result: result[0])
 
     return (
-        expected_date,
+        draw_date,
         main_number,
         main_number[-3:],
         main_number[2:4],
@@ -745,7 +746,6 @@ def correct_nikkei_afternoon_draw_date(
 
 SAME_DAY_DRAW_RULES = {
     "government": ((16, 0), {0, 1, 2, 3, 4, 5, 6}),
-    "lao": ((20, 30), {0, 1, 2, 3, 4}),
     "hanoi_special": ((17, 30), {0, 1, 2, 3, 4, 5, 6}),
     "hanoi_normal": ((18, 30), {0, 1, 2, 3, 4, 5, 6}),
     "hanoi_vip": ((19, 30), {0, 1, 2, 3, 4, 5, 6}),
@@ -1064,7 +1064,6 @@ def main() -> int:
                 main_number, top3, bottom2 = normalize_result(key, numbers)
             if key in {
                 "government",
-                "lao",
                 "hanoi_special",
                 "hanoi_normal",
                 "hanoi_vip",
