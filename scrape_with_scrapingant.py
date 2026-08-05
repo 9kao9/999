@@ -23,7 +23,7 @@ PAGES = {
     "hanoi_special": "https://www.xsthm.com/result",
     "hanoi_normal": "https://www.minhngoc.net.vn/ket-qua-xo-so/mien-bac.html",
     "hanoi_vip": "https://www.mlnhngoc.net/mlnhngoc",
-    "dow": "https://www.msn.com/en-us/money/indexdetails/fi-a6qja2",
+    "dow": "https://www.msn.com/en-us/money/indexdetails/dji-us-index/fi-a6qja2",
     "nikkei_morning": "https://indexes.nikkei.co.jp/en/nkave",
     "nikkei_afternoon": "https://indexes.nikkei.co.jp/en/nkave",
     "thai_stock": "https://www.set.or.th/th/market/index/set/overview",
@@ -206,6 +206,47 @@ def parse_msn_dow(html: str) -> tuple[str, str, str, str]:
     - bottom 2 = two decimals of the signed change shown after ``at close``
     - main = top 3 followed by bottom 2
     """
+    # MSN now stores the authoritative quote in its embedded page state.  Read
+    # that first because the visible labels vary by market, experiment and
+    # geolocation (and may no longer contain the literal ``DOW (DJI)`` text).
+    state_match = re.search(
+        r'"a6qja2"\s*:\s*\{\s*'
+        r'"price"\s*:\s*(?P<price>\d+(?:\.\d+)?)\s*,\s*'
+        r'"priceChange"\s*:\s*(?P<change>[+\-]?\d+(?:\.\d+)?)'
+        r'.{0,1200}?"timeLastTraded"\s*:\s*"(?P<traded>[^"]+)"',
+        html,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if state_match:
+        price = float(state_match.group("price"))
+        change = float(state_match.group("change"))
+        index_value = f"{price:.2f}"
+        change_value = f"{abs(change):.2f}"
+        index_integer, index_decimals = index_value.split(".")
+        change_decimals = change_value.rsplit(".", 1)[-1]
+
+        if len(index_integer) != 5:
+            raise RuntimeError(
+                f"MSN: รูปแบบดัชนีไม่ใช่เลข 5 หลัก: {index_value}"
+            )
+
+        try:
+            traded_at = datetime.fromisoformat(
+                state_match.group("traded").replace("Z", "+00:00")
+            )
+            # US cash-market trading occurs before midnight UTC, so its UTC
+            # calendar date is also the corresponding New York trading date.
+            draw_date = traded_at.date()
+        except (ValueError, KeyError) as exc:
+            raise RuntimeError(
+                "MSN: วันที่ timeLastTraded ไม่ถูกต้อง: "
+                f"{state_match.group('traded')}"
+            ) from exc
+
+        top3 = index_integer[-1] + index_decimals
+        bottom2 = change_decimals
+        return draw_date.isoformat(), top3 + bottom2, top3, bottom2
+
     soup = BeautifulSoup(html, "html.parser")
     page_text = soup.get_text(" ", strip=True)
     page_text = re.sub(r"[\u200e\u200f\u202a-\u202e\u2066-\u2069]", "", page_text)
