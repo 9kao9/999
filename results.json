@@ -299,13 +299,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-08-06T04:40:18+07:00",
-    "updated": [],
-    "errors": {
-      "lao": "laodl.com: draw 2026-08-06 is waiting for its result"
-    }
+    "last_run": "2026-08-06T04:41:56+07:00",
+    "updated": [
+      "dow"
+    ],
+    "errors": {}
   },
   "government": [
     {
@@ -336,7 +336,7 @@
   "dow": [
     {
       "date": "2026-08-05",
-      "time": "04:39",
+      "time": "04:41",
       "status": "out",
       "main": "91224",
       "top3": "912",
