@@ -283,11 +283,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "dow"
+      "nikkei_afternoon"
     ],
-    "last_run": "2026-08-05T03:27:18+07:00",
+    "last_run": "2026-08-05T14:28:38+07:00",
     "updated": [
-      "dow"
+      "nikkei_afternoon"
     ],
     "errors": {}
   },
@@ -442,6 +442,14 @@
     }
   ],
   "nikkei_afternoon": [
+    {
+      "date": "2026-08-05",
+      "time": "14:28",
+      "status": "out",
+      "main": "04491",
+      "top3": "044",
+      "bottom2": "91"
+    },
     {
       "date": "2026-08-04",
       "time": "13:20",
