@@ -301,11 +301,11 @@
     "requested": [
       "dow"
     ],
-    "last_run": "2026-08-06T04:30:45+07:00",
-    "updated": [],
-    "errors": {
-      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
-    }
+    "last_run": "2026-08-06T04:39:00+07:00",
+    "updated": [
+      "dow"
+    ],
+    "errors": {}
   },
   "government": [
     {
@@ -334,6 +334,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-08-05",
+      "time": "04:39",
+      "status": "out",
+      "main": "91224",
+      "top3": "912",
+      "bottom2": "24"
+    },
     {
       "date": "2026-08-04",
       "time": "03:27",
