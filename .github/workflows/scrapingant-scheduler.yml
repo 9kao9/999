@@ -1,11 +1,8 @@
-name: Wake lottery updater every 5 minutes
+name: Lottery updater trigger (n8n / manual)
 
 on:
-  # Temporary independent fallback while the self-hosted n8n VPS is offline.
-  # The called workflow checks results.json first and only scrapes a lottery
-  # that is inside its draw window and still missing today's result.
-  schedule:
-    - cron: "*/5 * * * *"
+  # n8n on the VPS is the only automatic scheduler. Keeping workflow_dispatch
+  # here provides a manual emergency fallback without creating duplicate runs.
   workflow_dispatch:
 
 permissions:
