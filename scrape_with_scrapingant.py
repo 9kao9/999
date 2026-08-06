@@ -862,6 +862,19 @@ def upsert(
     top3: str,
     bottom2: str,
 ) -> list[dict]:
+    # Keep an identical stored draw byte-for-byte stable.  Replacing it on
+    # every scheduled check only changes the collection time, which causes a
+    # needless commit and repeatedly cancels an in-progress Pages deployment.
+    for entry in entries:
+        if (
+            entry.get("date") == draw_date
+            and entry.get("main") == main
+            and entry.get("top3") == top3
+            and entry.get("bottom2") == bottom2
+            and entry.get("status") == "out"
+        ):
+            return entries
+
     entries = [entry for entry in entries if entry.get("date") != draw_date]
     entries.append(
         {
@@ -926,6 +939,10 @@ def main() -> int:
     print("รายการที่จะดึง: " + ", ".join(selected_pages))
 
     data = load_data()
+    original_results = {
+        key: json.loads(json.dumps(data.get(key, [])))
+        for key in PAGES
+    }
     now = datetime.now(THAI_TZ)
     updated: list[str] = []
     errors: dict[str, str] = {}
@@ -1143,14 +1160,21 @@ def main() -> int:
             errors[key] = str(exc)
             print(f"[{key}] ไม่สำเร็จ: {exc}", file=sys.stderr)
 
-    data["_meta"] = {
-        "provider": "scrapingant",
-        "render_javascript": render_javascript,
-        "requested": list(selected_pages),
-        "last_run": now.isoformat(timespec="seconds"),
-        "updated": updated,
-        "errors": errors,
-    }
+    results_changed = any(
+        data.get(key, []) != original_results[key]
+        for key in PAGES
+    )
+    if results_changed or errors:
+        data["_meta"] = {
+            "provider": "scrapingant",
+            "render_javascript": render_javascript,
+            "requested": list(selected_pages),
+            "last_run": now.isoformat(timespec="seconds"),
+            "updated": updated,
+            "errors": errors,
+        }
+    else:
+        print("ไม่มีผลใหม่: คง results.json เดิมเพื่อไม่ให้ Pages deploy ซ้ำ")
     save_data(data)
 
     print(f"สรุป: สำเร็จ {len(updated)}/{len(selected_pages)} หน้า")
