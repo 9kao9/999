@@ -144,7 +144,10 @@
   </a>
 
   <script>
-    const DATA_URL="./results.json";
+    // Read live results directly from the repository. GitHub Pages deployment
+    // can take several minutes or occasionally fail, while raw GitHub permits
+    // cross-origin reads and exposes the committed result immediately.
+    const DATA_URL="https://raw.githubusercontent.com/9kao9/999/main/results.json";
     // เปลี่ยนลิงก์ LINE ได้ที่บรรทัดนี้
     const LINE_GROUP_URL="https://lin.ee/Yo0Gd4d";
     
