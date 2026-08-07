@@ -465,6 +465,14 @@
   ],
   "nikkei_morning": [
     {
+  "date": "2026-08-07",
+  "time": "09:36",
+  "status": "out",
+  "main": "91610",
+  "top3": "916",
+  "bottom2": "10"
+  },
+    {
       "date": "2026-08-06",
       "time": "09:36",
       "status": "out",
