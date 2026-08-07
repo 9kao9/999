@@ -180,6 +180,7 @@ jobs:
             const path = "results.json";
             const branch = context.ref.replace("refs/heads/", "");
             const localContent = fs.readFileSync(path, "utf8");
+            const localData = JSON.parse(localContent);
             const current = await github.rest.repos.getContent({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -190,7 +191,24 @@ jobs:
               current.data.content,
               "base64"
             ).toString("utf8");
-            if (localContent === remoteContent) {
+            const remoteData = JSON.parse(remoteContent);
+
+            // Another lottery job may have committed after this job checked
+            // out the repository. Merge only the lottery keys updated by this
+            // run into the newest remote file so an older checkout cannot
+            // erase results saved by a different job.
+            const updatedKeys = Array.isArray(localData?._meta?.updated)
+              ? localData._meta.updated
+              : [];
+            for (const key of updatedKeys) {
+              if (Array.isArray(localData[key])) {
+                remoteData[key] = localData[key];
+              }
+            }
+            remoteData._meta = localData._meta;
+            const mergedContent = JSON.stringify(remoteData, null, 2) + "\n";
+
+            if (mergedContent === remoteContent) {
               core.info("No data changes");
               return;
             }
@@ -200,7 +218,7 @@ jobs:
               path,
               branch,
               message: "chore: update selected lottery result",
-              content: Buffer.from(localContent).toString("base64"),
+              content: Buffer.from(mergedContent).toString("base64"),
               sha: current.data.sha
             });
             core.info("results.json updated successfully");
