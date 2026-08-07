@@ -173,6 +173,14 @@
   ],
   "hanoi_normal": [
     {
+      "date": "2026-08-07",
+      "time": "18:36",
+      "status": "out",
+      "main": "16479",
+      "top3": "479",
+      "bottom2": "89"
+    },
+    {
       "date": "2026-08-06",
       "time": "18:36",
       "status": "out",
@@ -349,11 +357,11 @@
     "requested": [
       "hanoi_normal"
     ],
-    "last_run": "2026-08-07T18:31:10+07:00",
-    "updated": [],
-    "errors": {
-      "hanoi_normal": "hanoi_normal: source draw date is 2026-08-06; waiting for 2026-08-07"
-    }
+    "last_run": "2026-08-07T18:36:17+07:00",
+    "updated": [
+      "hanoi_normal"
+    ],
+    "errors": {}
   },
   "government": [
     {
@@ -465,13 +473,13 @@
   ],
   "nikkei_morning": [
     {
-  "date": "2026-08-07",
-  "time": "09:36",
-  "status": "out",
-  "main": "91610",
-  "top3": "916",
-  "bottom2": "10"
-  },
+      "date": "2026-08-07",
+      "time": "09:36",
+      "status": "out",
+      "main": "91610",
+      "top3": "916",
+      "bottom2": "10"
+    },
     {
       "date": "2026-08-06",
       "time": "09:36",
