@@ -451,11 +451,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-08-10T20:31:14+07:00",
+    "last_run": "2026-08-11T03:26:08+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -486,6 +486,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-08-10",
+      "time": "03:26",
+      "status": "out",
+      "main": "59895",
+      "top3": "598",
+      "bottom2": "95"
+    },
     {
       "date": "2026-08-07",
       "time": "03:26",
