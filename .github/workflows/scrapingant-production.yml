@@ -71,6 +71,19 @@ jobs:
           today = now.date().isoformat()
           weekday = now.weekday()
           minute = now.hour * 60 + now.minute
+          japan_market_holidays = {
+              "2026-01-01", "2026-01-02", "2026-01-03", "2026-01-12",
+              "2026-02-11", "2026-02-23", "2026-03-20", "2026-04-29",
+              "2026-05-03", "2026-05-04", "2026-05-05", "2026-05-06",
+              "2026-07-20", "2026-08-11", "2026-09-21", "2026-09-22",
+              "2026-09-23", "2026-10-12", "2026-11-03", "2026-11-23",
+              "2026-12-31",
+              "2027-01-01", "2027-01-02", "2027-01-03", "2027-01-11",
+              "2027-02-11", "2027-02-23", "2027-03-21", "2027-03-22",
+              "2027-04-29", "2027-05-03", "2027-05-04", "2027-05-05",
+              "2027-07-19", "2027-08-11", "2027-09-20", "2027-09-23",
+              "2027-10-11", "2027-11-03", "2027-11-23", "2027-12-31",
+          }
           path = Path("results.json")
           data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
@@ -91,11 +104,15 @@ jobs:
           if weekday <= 4:
               # เริ่มดึงนิเคอิเช้าเวลา 09:35 น. และหยุดก่อนตลาดรอบบ่าย
               # เพื่อป้องกันค่ารอบบ่ายถูกบันทึกผิดเป็นผลนิเคอิเช้า
-              if 575 <= minute <= 625 and not has_date("nikkei_morning", today):
+              if (today not in japan_market_holidays and
+                      575 <= minute <= 625 and
+                      not has_date("nikkei_morning", today)):
                   due.append("nikkei_morning")
               # ติดตามต่อถึง 18:00 น. เผื่อ scheduled run ถูก GitHub เลื่อน
               # เริ่มดึงนิเคอิบ่ายเวลา 13:20 น. ตามเวลาประเทศไทย
-              if 800 <= minute <= 1080 and not has_date("nikkei_afternoon", today):
+              if (today not in japan_market_holidays and
+                      800 <= minute <= 1080 and
+                      not has_date("nikkei_afternoon", today)):
                   due.append("nikkei_afternoon")
               if 1008 <= minute <= 1110 and not has_date("thai_stock", today):
                   due.append("thai_stock")
