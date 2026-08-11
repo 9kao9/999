@@ -453,7 +453,7 @@
     "requested": [
       "nikkei_morning"
     ],
-    "last_run": "2026-08-11T09:36:09+07:00",
+    "last_run": "2026-08-11T10:11:10+07:00",
     "updated": [],
     "errors": {
       "nikkei_morning": "nikkei_morning: source draw date is 2026-08-10; waiting for 2026-08-11"
