@@ -605,13 +605,21 @@
     "requested": [
       "government"
     ],
-    "last_run": "2026-08-16T16:06:06+07:00",
-    "updated": [],
-    "errors": {
-      "government": "ScrapingAnt HTTP 404: {\"detail\":\"This site can’t be reached\"}"
-    }
+    "last_run": "2026-08-16T16:41:12+07:00",
+    "updated": [
+      "government"
+    ],
+    "errors": {}
   },
   "government": [
+    {
+      "date": "2026-08-16",
+      "time": "16:41",
+      "status": "out",
+      "main": "004615",
+      "top3": "615",
+      "bottom2": "53"
+    },
     {
       "date": "2026-08-01",
       "time": "16:10",
