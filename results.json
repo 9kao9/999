@@ -471,6 +471,14 @@
   ],
   "hanoi_vip": [
     {
+      "date": "2026-08-17",
+      "time": "19:31",
+      "status": "out",
+      "main": "39697",
+      "top3": "697",
+      "bottom2": "47"
+    },
+    {
       "date": "2026-08-16",
       "time": "19:31",
       "status": "out",
@@ -643,11 +651,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_normal"
+      "hanoi_vip"
     ],
-    "last_run": "2026-08-17T18:36:12+07:00",
+    "last_run": "2026-08-17T19:31:10+07:00",
     "updated": [
-      "hanoi_normal"
+      "hanoi_vip"
     ],
     "errors": {}
   },
