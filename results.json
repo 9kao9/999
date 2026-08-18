@@ -667,13 +667,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_special"
+      "hanoi_normal"
     ],
-    "last_run": "2026-08-18T17:31:10+07:00",
-    "updated": [
-      "hanoi_special"
-    ],
-    "errors": {}
+    "last_run": "2026-08-18T18:31:10+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_normal": "hanoi_normal: source draw date is 2026-08-17; waiting for 2026-08-18"
+    }
   },
   "government": [
     {
