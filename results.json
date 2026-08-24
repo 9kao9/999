@@ -867,13 +867,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-08-24T20:31:09+07:00",
-    "updated": [
-      "lao"
-    ],
-    "errors": {}
+    "last_run": "2026-08-25T03:26:09+07:00",
+    "updated": [],
+    "errors": {
+      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
+    }
   },
   "government": [
     {
