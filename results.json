@@ -867,11 +867,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "dow"
+      "nikkei_morning"
     ],
-    "last_run": "2026-08-25T04:36:08+07:00",
+    "last_run": "2026-08-25T09:36:11+07:00",
     "updated": [
-      "dow"
+      "nikkei_morning"
     ],
     "errors": {}
   },
@@ -1088,6 +1088,14 @@
     }
   ],
   "nikkei_morning": [
+    {
+      "date": "2026-08-25",
+      "time": "09:36",
+      "status": "out",
+      "main": "86859",
+      "top3": "868",
+      "bottom2": "59"
+    },
     {
       "date": "2026-08-24",
       "time": "09:36",
