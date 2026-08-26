@@ -907,13 +907,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_special"
+      "hanoi_normal"
     ],
-    "last_run": "2026-08-26T17:31:09+07:00",
-    "updated": [
-      "hanoi_special"
-    ],
-    "errors": {}
+    "last_run": "2026-08-26T18:31:06+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_normal": "hanoi_normal: source draw date is 2026-08-25; waiting for 2026-08-26"
+    }
   },
   "government": [
     {
