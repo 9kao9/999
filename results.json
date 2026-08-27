@@ -931,11 +931,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_afternoon"
+      "thai_stock"
     ],
-    "last_run": "2026-08-27T13:21:09+07:00",
+    "last_run": "2026-08-27T16:51:07+07:00",
     "updated": [
-      "nikkei_afternoon"
+      "thai_stock"
     ],
     "errors": {}
   },
@@ -1532,6 +1532,14 @@
     }
   ],
   "thai_stock": [
+    {
+      "date": "2026-08-27",
+      "time": "16:51",
+      "status": "out",
+      "main": "37022",
+      "top3": "370",
+      "bottom2": "22"
+    },
     {
       "date": "2026-08-26",
       "time": "16:51",
