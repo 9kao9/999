@@ -995,11 +995,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-08-28T20:31:09+07:00",
+    "last_run": "2026-08-29T03:26:11+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -1038,6 +1038,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-08-28",
+      "time": "03:26",
+      "status": "out",
+      "main": "99945",
+      "top3": "999",
+      "bottom2": "45"
+    },
     {
       "date": "2026-08-27",
       "time": "03:26",
