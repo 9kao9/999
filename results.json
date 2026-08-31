@@ -1043,11 +1043,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "nikkei_morning"
     ],
-    "last_run": "2026-08-30T19:31:14+07:00",
+    "last_run": "2026-08-31T09:36:09+07:00",
     "updated": [
-      "hanoi_vip"
+      "nikkei_morning"
     ],
     "errors": {}
   },
@@ -1296,6 +1296,14 @@
     }
   ],
   "nikkei_morning": [
+    {
+      "date": "2026-08-31",
+      "time": "09:36",
+      "status": "out",
+      "main": "16096",
+      "top3": "160",
+      "bottom2": "96"
+    },
     {
       "date": "2026-08-28",
       "time": "09:36",
