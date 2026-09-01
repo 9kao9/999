@@ -1075,11 +1075,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
-    "last_run": "2026-09-01T09:36:11+07:00",
+    "last_run": "2026-09-01T13:21:12+07:00",
     "updated": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
     "errors": {}
   },
@@ -1546,6 +1546,14 @@
     }
   ],
   "nikkei_afternoon": [
+    {
+      "date": "2026-09-01",
+      "time": "13:21",
+      "status": "out",
+      "main": "25461",
+      "top3": "254",
+      "bottom2": "61"
+    },
     {
       "date": "2026-08-31",
       "time": "13:21",
