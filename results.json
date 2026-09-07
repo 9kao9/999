@@ -1251,11 +1251,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "nikkei_morning"
     ],
-    "last_run": "2026-09-06T19:31:09+07:00",
+    "last_run": "2026-09-07T09:36:14+07:00",
     "updated": [
-      "hanoi_vip"
+      "nikkei_morning"
     ],
     "errors": {}
   },
@@ -1552,6 +1552,14 @@
     }
   ],
   "nikkei_morning": [
+    {
+      "date": "2026-09-07",
+      "time": "09:36",
+      "status": "out",
+      "main": "01117",
+      "top3": "011",
+      "bottom2": "17"
+    },
     {
       "date": "2026-09-04",
       "time": "09:36",
