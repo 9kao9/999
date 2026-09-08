@@ -1315,13 +1315,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-09-08T20:31:09+07:00",
-    "updated": [
-      "lao"
-    ],
-    "errors": {}
+    "last_run": "2026-09-09T03:26:08+07:00",
+    "updated": [],
+    "errors": {
+      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
+    }
   },
   "government": [
     {
