@@ -1499,11 +1499,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "government"
+      "thai_stock"
     ],
-    "last_run": "2026-09-16T16:41:10+07:00",
+    "last_run": "2026-09-16T16:51:06+07:00",
     "updated": [
-      "government"
+      "thai_stock"
     ],
     "errors": {}
   },
@@ -2444,6 +2444,14 @@
     }
   ],
   "thai_stock": [
+    {
+      "date": "2026-09-16",
+      "time": "16:51",
+      "status": "out",
+      "main": "67393",
+      "top3": "673",
+      "bottom2": "93"
+    },
     {
       "date": "2026-09-15",
       "time": "16:51",
