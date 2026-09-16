@@ -1499,13 +1499,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_afternoon"
+      "government"
     ],
-    "last_run": "2026-09-16T13:21:07+07:00",
-    "updated": [
-      "nikkei_afternoon"
-    ],
-    "errors": {}
+    "last_run": "2026-09-16T16:06:10+07:00",
+    "updated": [],
+    "errors": {
+      "government": "ScrapingAnt HTTP 404: {\"detail\":\"This site can’t be reached\"}"
+    }
   },
   "government": [
     {
