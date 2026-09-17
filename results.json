@@ -1539,13 +1539,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_special"
+      "hanoi_normal"
     ],
-    "last_run": "2026-09-17T17:31:08+07:00",
-    "updated": [
-      "hanoi_special"
-    ],
-    "errors": {}
+    "last_run": "2026-09-17T18:31:06+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_normal": "hanoi_normal: source draw date is 2026-09-16; waiting for 2026-09-17"
+    }
   },
   "government": [
     {
