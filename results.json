@@ -1595,11 +1595,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-09-18T20:31:18+07:00",
+    "last_run": "2026-09-19T03:26:10+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -1654,6 +1654,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-09-18",
+      "time": "03:26",
+      "status": "out",
+      "main": "26440",
+      "top3": "264",
+      "bottom2": "40"
+    },
     {
       "date": "2026-09-17",
       "time": "03:26",
