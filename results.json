@@ -821,6 +821,14 @@
   ],
   "hanoi_normal": [
     {
+      "date": "2026-09-24",
+      "time": "18:36",
+      "status": "out",
+      "main": "78196",
+      "top3": "196",
+      "bottom2": "82"
+    },
+    {
       "date": "2026-09-23",
       "time": "18:36",
       "status": "out",
@@ -1749,11 +1757,11 @@
     "requested": [
       "hanoi_normal"
     ],
-    "last_run": "2026-09-24T18:31:11+07:00",
-    "updated": [],
-    "errors": {
-      "hanoi_normal": "hanoi_normal: source draw date is 2026-09-23; waiting for 2026-09-24"
-    }
+    "last_run": "2026-09-24T18:36:09+07:00",
+    "updated": [
+      "hanoi_normal"
+    ],
+    "errors": {}
   },
   "government": [
     {
