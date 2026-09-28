@@ -1883,11 +1883,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-09-28T20:31:07+07:00",
+    "last_run": "2026-09-29T03:26:12+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -1942,6 +1942,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-09-28",
+      "time": "03:26",
+      "status": "out",
+      "main": "15111",
+      "top3": "151",
+      "bottom2": "11"
+    },
     {
       "date": "2026-09-25",
       "time": "03:26",
