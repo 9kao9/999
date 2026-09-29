@@ -1883,11 +1883,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
-    "last_run": "2026-09-29T09:36:07+07:00",
+    "last_run": "2026-09-29T13:21:08+07:00",
     "updated": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
     "errors": {}
   },
@@ -2658,6 +2658,14 @@
     }
   ],
   "nikkei_afternoon": [
+    {
+      "date": "2026-09-29",
+      "time": "13:21",
+      "status": "out",
+      "main": "35210",
+      "top3": "352",
+      "bottom2": "10"
+    },
     {
       "date": "2026-09-28",
       "time": "13:21",
