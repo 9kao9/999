@@ -1947,11 +1947,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-09-30T20:31:13+07:00",
+    "last_run": "2026-10-01T03:26:09+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -2006,6 +2006,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-09-30",
+      "time": "03:26",
+      "status": "out",
+      "main": "60587",
+      "top3": "605",
+      "bottom2": "87"
+    },
     {
       "date": "2026-09-29",
       "time": "03:26",
