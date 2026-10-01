@@ -1947,15 +1947,23 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_afternoon"
+      "government"
     ],
-    "last_run": "2026-10-01T13:21:08+07:00",
+    "last_run": "2026-10-01T16:06:46+07:00",
     "updated": [
-      "nikkei_afternoon"
+      "government"
     ],
     "errors": {}
   },
   "government": [
+    {
+      "date": "2026-10-01",
+      "time": "16:06",
+      "status": "out",
+      "main": "402701",
+      "top3": "701",
+      "bottom2": "70"
+    },
     {
       "date": "2026-09-16",
       "time": "16:41",
