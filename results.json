@@ -1979,11 +1979,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-10-01T20:31:28+07:00",
+    "last_run": "2026-10-02T03:26:09+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -2046,6 +2046,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-10-01",
+      "time": "03:26",
+      "status": "out",
+      "main": "65651",
+      "top3": "656",
+      "bottom2": "51"
+    },
     {
       "date": "2026-09-30",
       "time": "03:26",
