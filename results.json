@@ -2267,11 +2267,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "thai_stock"
     ],
-    "last_run": "2026-10-11T19:31:06+07:00",
+    "last_run": "2026-10-12T16:51:09+07:00",
     "updated": [
-      "hanoi_vip"
+      "thai_stock"
     ],
     "errors": {}
   },
@@ -3588,6 +3588,14 @@
     }
   ],
   "thai_stock": [
+    {
+      "date": "2026-10-12",
+      "time": "16:51",
+      "status": "out",
+      "main": "17491",
+      "top3": "174",
+      "bottom2": "91"
+    },
     {
       "date": "2026-10-09",
       "time": "16:51",
