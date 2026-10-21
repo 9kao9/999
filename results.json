@@ -2563,13 +2563,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "lao"
     ],
-    "last_run": "2026-10-21T19:31:06+07:00",
-    "updated": [
-      "hanoi_vip"
-    ],
-    "errors": {}
+    "last_run": "2026-10-21T20:31:10+07:00",
+    "updated": [],
+    "errors": {
+      "lao": "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
+    }
   },
   "government": [
     {
