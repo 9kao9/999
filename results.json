@@ -2571,13 +2571,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-10-21T20:36:08+07:00",
-    "updated": [
-      "lao"
-    ],
-    "errors": {}
+    "last_run": "2026-10-22T03:26:08+07:00",
+    "updated": [],
+    "errors": {
+      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
+    }
   },
   "government": [
     {
