@@ -2573,11 +2573,11 @@
     "requested": [
       "dow"
     ],
-    "last_run": "2026-10-22T03:26:08+07:00",
-    "updated": [],
-    "errors": {
-      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
-    }
+    "last_run": "2026-10-22T04:01:11+07:00",
+    "updated": [
+      "dow"
+    ],
+    "errors": {}
   },
   "government": [
     {
@@ -2646,6 +2646,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-10-21",
+      "time": "04:01",
+      "status": "out",
+      "main": "60921",
+      "top3": "609",
+      "bottom2": "21"
+    },
     {
       "date": "2026-10-20",
       "time": "03:26",
