@@ -2603,11 +2603,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-10-22T20:36:07+07:00",
+    "last_run": "2026-10-23T03:26:07+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -2678,6 +2678,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-10-22",
+      "time": "03:26",
+      "status": "out",
+      "main": "79889",
+      "top3": "798",
+      "bottom2": "89"
+    },
     {
       "date": "2026-10-21",
       "time": "04:01",
