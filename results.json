@@ -2723,13 +2723,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_special"
+      "hanoi_normal"
     ],
-    "last_run": "2026-10-27T17:31:09+07:00",
-    "updated": [
-      "hanoi_special"
-    ],
-    "errors": {}
+    "last_run": "2026-10-27T18:31:06+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_normal": "hanoi_normal: source draw date is 2026-10-26; waiting for 2026-10-27"
+    }
   },
   "government": [
     {
