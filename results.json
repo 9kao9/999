@@ -2771,13 +2771,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "lao"
     ],
-    "last_run": "2026-10-28T19:31:06+07:00",
-    "updated": [
-      "hanoi_vip"
-    ],
-    "errors": {}
+    "last_run": "2026-10-28T20:31:12+07:00",
+    "updated": [],
+    "errors": {
+      "lao": "HTTPSConnectionPool(host='laodl.com', port=443): Max retries exceeded with url: /api/website/laolot/WinPrizeHistory?type=1 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+    }
   },
   "government": [
     {
