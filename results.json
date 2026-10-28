@@ -2755,15 +2755,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "thai_stock",
-      "hanoi_special"
+      "hanoi_normal"
     ],
-    "last_run": "2026-10-28T18:11:09+07:00",
-    "updated": [
-      "thai_stock",
-      "hanoi_special"
-    ],
-    "errors": {}
+    "last_run": "2026-10-28T18:31:09+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_normal": "hanoi_normal: source draw date is 2026-10-27; waiting for 2026-10-28"
+    }
   },
   "government": [
     {
