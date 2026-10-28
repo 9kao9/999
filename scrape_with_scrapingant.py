@@ -725,11 +725,11 @@ def correct_nikkei_afternoon_draw_date(
     now: datetime,
     numbers_changed: bool = True,
 ) -> str:
-    """Use today's date after the weekday Nikkei afternoon draw."""
+    """Use today's date after the 13:30 Bangkok-time Nikkei close."""
     if (
         not numbers_changed
         or now.weekday() > 4
-        or (now.hour, now.minute) < (13, 0)
+        or (now.hour, now.minute) < (13, 30)
     ):
         return draw_date
 
