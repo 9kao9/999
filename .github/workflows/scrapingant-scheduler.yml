@@ -1,8 +1,9 @@
-name: Lottery updater trigger (n8n / manual)
+name: Lottery updater trigger (GitHub / manual)
 
 on:
-  # n8n on the VPS is the only automatic scheduler. Keeping workflow_dispatch
-  # here provides a manual emergency fallback without creating duplicate runs.
+  # GitHub cron uses UTC. 06:35 UTC = 13:35 Asia/Bangkok.
+  schedule:
+    - cron: '35 6 * * 1-5'
   workflow_dispatch:
 
 permissions:
