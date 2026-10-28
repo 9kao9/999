@@ -14,11 +14,17 @@ class NikkeiScheduleTests(unittest.TestCase):
             r'id:"nikkei_afternoon"[^\n]+hour:13,minute:30',
         )
 
-    def test_afternoon_fetch_starts_at_1332_bangkok_time(self):
+    def test_afternoon_fetch_starts_at_1335_bangkok_time(self):
         workflow = (
             ROOT / ".github" / "workflows" / "scrapingant-production.yml"
         ).read_text(encoding="utf-8")
-        self.assertIn("812 <= minute <= 1080", workflow)
+        self.assertIn("815 <= minute <= 1080", workflow)
+
+    def test_github_scheduler_wakes_at_1335_bangkok_time(self):
+        scheduler = (
+            ROOT / ".github" / "workflows" / "scrapingant-scheduler.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("cron: '35 6 * * 1-5'", scheduler)
 
     def test_afternoon_date_correction_waits_for_market_close(self):
         scraper = (ROOT / "scrape_with_scrapingant.py").read_text(encoding="utf-8")
