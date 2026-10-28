@@ -2749,7 +2749,7 @@
     "requested": [
       "nikkei_afternoon"
     ],
-    "last_run": "2026-10-28T13:21:10+07:00",
+    "last_run": "2026-10-28T15:04:44+07:00",
     "updated": [
       "nikkei_afternoon"
     ],
@@ -3868,11 +3868,11 @@
   "nikkei_afternoon": [
     {
       "date": "2026-10-28",
-      "time": "13:21",
+      "time": "15:04",
       "status": "out",
-      "main": "46427",
-      "top3": "464",
-      "bottom2": "27"
+      "main": "41982",
+      "top3": "419",
+      "bottom2": "82"
     },
     {
       "date": "2026-10-27",
