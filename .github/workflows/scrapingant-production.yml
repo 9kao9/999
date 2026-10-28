@@ -109,9 +109,10 @@ jobs:
                       not has_date("nikkei_morning", today)):
                   due.append("nikkei_morning")
               # ติดตามต่อถึง 18:00 น. เผื่อ scheduled run ถูก GitHub เลื่อน
-              # เริ่มดึงนิเคอิบ่ายเวลา 13:20 น. ตามเวลาประเทศไทย
+              # ตลาดญี่ปุ่นปิด 15:30 น. (13:30 น. ประเทศไทย)
+              # เริ่มดึงหลังตลาดปิด 5 นาที เพื่อรอค่าปิดและ closing auction
               if (today not in japan_market_holidays and
-                      800 <= minute <= 1080 and
+                      815 <= minute <= 1080 and
                       not has_date("nikkei_afternoon", today)):
                   due.append("nikkei_afternoon")
               if 1008 <= minute <= 1110 and not has_date("thai_stock", today):
