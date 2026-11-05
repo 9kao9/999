@@ -3019,13 +3019,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-11-05T20:36:08+07:00",
-    "updated": [
-      "lao"
-    ],
-    "errors": {}
+    "last_run": "2026-11-06T03:26:10+07:00",
+    "updated": [],
+    "errors": {
+      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
+    }
   },
   "government": [
     {
