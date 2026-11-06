@@ -3019,11 +3019,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
-    "last_run": "2026-11-06T09:36:07+07:00",
+    "last_run": "2026-11-06T13:36:06+07:00",
     "updated": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
     "errors": {}
   },
@@ -4250,6 +4250,14 @@
     }
   ],
   "nikkei_afternoon": [
+    {
+      "date": "2026-11-06",
+      "time": "13:36",
+      "status": "out",
+      "main": "47713",
+      "top3": "477",
+      "bottom2": "13"
+    },
     {
       "date": "2026-11-05",
       "time": "13:36",
