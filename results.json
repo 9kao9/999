@@ -3163,11 +3163,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-11-10T20:41:07+07:00",
+    "last_run": "2026-11-11T03:26:07+07:00",
     "updated": [
-      "lao"
+      "dow"
     ],
     "errors": {}
   },
@@ -3246,6 +3246,14 @@
     }
   ],
   "dow": [
+    {
+      "date": "2026-11-10",
+      "time": "03:26",
+      "status": "out",
+      "main": "60075",
+      "top3": "600",
+      "bottom2": "75"
+    },
     {
       "date": "2026-11-09",
       "time": "04:01",
