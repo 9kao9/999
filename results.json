@@ -1,6 +1,14 @@
 {
   "lao": [
     {
+      "date": "2026-11-10",
+      "time": "20:41",
+      "status": "out",
+      "main": "173546",
+      "top3": "546",
+      "bottom2": "35"
+    },
+    {
       "date": "2026-11-09",
       "time": "20:31",
       "status": "out",
@@ -3157,11 +3165,11 @@
     "requested": [
       "lao"
     ],
-    "last_run": "2026-11-10T20:36:09+07:00",
-    "updated": [],
-    "errors": {
-      "lao": "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
-    }
+    "last_run": "2026-11-10T20:41:07+07:00",
+    "updated": [
+      "lao"
+    ],
+    "errors": {}
   },
   "government": [
     {
