@@ -3227,13 +3227,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "lao"
+      "dow"
     ],
-    "last_run": "2026-11-12T20:36:23+07:00",
-    "updated": [
-      "lao"
-    ],
-    "errors": {}
+    "last_run": "2026-11-13T03:26:07+07:00",
+    "updated": [],
+    "errors": {
+      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
+    }
   },
   "government": [
     {
