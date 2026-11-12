@@ -3195,11 +3195,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "dow"
+      "nikkei_morning"
     ],
-    "last_run": "2026-11-12T04:00:03+07:00",
+    "last_run": "2026-11-12T09:36:07+07:00",
     "updated": [
-      "dow"
+      "nikkei_morning"
     ],
     "errors": {}
   },
@@ -3904,6 +3904,14 @@
     }
   ],
   "nikkei_morning": [
+    {
+      "date": "2026-11-12",
+      "time": "09:36",
+      "status": "out",
+      "main": "41657",
+      "top3": "416",
+      "bottom2": "57"
+    },
     {
       "date": "2026-11-11",
       "time": "09:36",
