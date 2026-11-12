@@ -1,6 +1,14 @@
 {
   "lao": [
     {
+      "date": "2026-11-12",
+      "time": "20:36",
+      "status": "out",
+      "main": "189836",
+      "top3": "836",
+      "bottom2": "98"
+    },
+    {
       "date": "2026-11-11",
       "time": "20:36",
       "status": "out",
@@ -3221,11 +3229,11 @@
     "requested": [
       "lao"
     ],
-    "last_run": "2026-11-12T20:31:09+07:00",
-    "updated": [],
-    "errors": {
-      "lao": "HTTPSConnectionPool(host='laodl.com', port=443): Read timed out. (read timeout=30)"
-    }
+    "last_run": "2026-11-12T20:36:23+07:00",
+    "updated": [
+      "lao"
+    ],
+    "errors": {}
   },
   "government": [
     {
