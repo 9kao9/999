@@ -3251,13 +3251,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "lao"
     ],
-    "last_run": "2026-11-13T19:31:08+07:00",
-    "updated": [
-      "hanoi_vip"
-    ],
-    "errors": {}
+    "last_run": "2026-11-13T20:31:19+07:00",
+    "updated": [],
+    "errors": {
+      "lao": "504 Server Error: Gateway Timeout for url: https://laodl.com/api/website/laolot/WinPrizeHistory?type=1"
+    }
   },
   "government": [
     {
