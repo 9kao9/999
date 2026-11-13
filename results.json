@@ -1,6 +1,14 @@
 {
   "lao": [
     {
+      "date": "2026-11-13",
+      "time": "20:36",
+      "status": "out",
+      "main": "290900",
+      "top3": "900",
+      "bottom2": "09"
+    },
+    {
       "date": "2026-11-12",
       "time": "20:36",
       "status": "out",
@@ -3253,11 +3261,11 @@
     "requested": [
       "lao"
     ],
-    "last_run": "2026-11-13T20:31:19+07:00",
-    "updated": [],
-    "errors": {
-      "lao": "504 Server Error: Gateway Timeout for url: https://laodl.com/api/website/laolot/WinPrizeHistory?type=1"
-    }
+    "last_run": "2026-11-13T20:36:20+07:00",
+    "updated": [
+      "lao"
+    ],
+    "errors": {}
   },
   "government": [
     {
