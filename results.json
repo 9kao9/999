@@ -3307,11 +3307,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
-    "last_run": "2026-11-16T09:36:08+07:00",
+    "last_run": "2026-11-16T13:36:05+07:00",
     "updated": [
-      "nikkei_morning"
+      "nikkei_afternoon"
     ],
     "errors": {}
   },
@@ -4634,6 +4634,14 @@
     }
   ],
   "nikkei_afternoon": [
+    {
+      "date": "2026-11-16",
+      "time": "13:36",
+      "status": "out",
+      "main": "20233",
+      "top3": "202",
+      "bottom2": "33"
+    },
     {
       "date": "2026-11-13",
       "time": "13:36",
