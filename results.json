@@ -3307,11 +3307,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "government"
+      "thai_stock"
     ],
-    "last_run": "2026-11-16T16:06:10+07:00",
+    "last_run": "2026-11-16T16:51:07+07:00",
     "updated": [
-      "government"
+      "thai_stock"
     ],
     "errors": {}
   },
@@ -5236,6 +5236,14 @@
     }
   ],
   "thai_stock": [
+    {
+      "date": "2026-11-16",
+      "time": "16:51",
+      "status": "out",
+      "main": "15335",
+      "top3": "153",
+      "bottom2": "35"
+    },
     {
       "date": "2026-11-13",
       "time": "16:51",
