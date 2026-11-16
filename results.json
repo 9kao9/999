@@ -1,6 +1,14 @@
 {
   "lao": [
     {
+      "date": "2026-11-16",
+      "time": "20:31",
+      "status": "out",
+      "main": "460071",
+      "top3": "071",
+      "bottom2": "00"
+    },
+    {
       "date": "2026-11-13",
       "time": "20:36",
       "status": "out",
@@ -3331,11 +3339,11 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "lao"
     ],
-    "last_run": "2026-11-16T19:37:12+07:00",
+    "last_run": "2026-11-16T20:31:09+07:00",
     "updated": [
-      "hanoi_vip"
+      "lao"
     ],
     "errors": {}
   },
