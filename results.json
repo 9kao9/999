@@ -3411,13 +3411,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_special"
+      "hanoi_normal"
     ],
-    "last_run": "2026-11-19T17:31:11+07:00",
-    "updated": [
-      "hanoi_special"
-    ],
-    "errors": {}
+    "last_run": "2026-11-19T18:31:06+07:00",
+    "updated": [],
+    "errors": {
+      "hanoi_normal": "hanoi_normal: source draw date is 2026-11-18; waiting for 2026-11-19"
+    }
   },
   "government": [
     {
