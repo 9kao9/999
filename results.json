@@ -3541,10 +3541,10 @@
     "requested": [
       "lao"
     ],
-    "last_run": "2026-11-23T20:31:19+07:00",
+    "last_run": "2026-11-23T20:36:10+07:00",
     "updated": [],
     "errors": {
-      "lao": "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
+      "lao": "HTTPSConnectionPool(host='laodl.com', port=443): Max retries exceeded with url: /api/website/laolot/WinPrizeHistory?type=1 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1011)')))"
     }
   },
   "government": [
