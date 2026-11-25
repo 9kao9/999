@@ -1,6 +1,14 @@
 {
   "lao": [
     {
+      "date": "2026-11-25",
+      "time": "20:36",
+      "status": "out",
+      "main": "261801",
+      "top3": "801",
+      "bottom2": "18"
+    },
+    {
       "date": "2026-11-24",
       "time": "20:31",
       "status": "out",
@@ -3605,11 +3613,11 @@
     "requested": [
       "lao"
     ],
-    "last_run": "2026-11-25T20:31:17+07:00",
-    "updated": [],
-    "errors": {
-      "lao": "500 Server Error: Internal Server Error for url: https://laodl.com/api/website/laolot/WinPrizeHistory?type=1"
-    }
+    "last_run": "2026-11-25T20:36:05+07:00",
+    "updated": [
+      "lao"
+    ],
+    "errors": {}
   },
   "government": [
     {
