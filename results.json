@@ -3603,13 +3603,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "hanoi_vip"
+      "lao"
     ],
-    "last_run": "2026-11-25T19:31:16+07:00",
-    "updated": [
-      "hanoi_vip"
-    ],
-    "errors": {}
+    "last_run": "2026-11-25T20:31:17+07:00",
+    "updated": [],
+    "errors": {
+      "lao": "500 Server Error: Internal Server Error for url: https://laodl.com/api/website/laolot/WinPrizeHistory?type=1"
+    }
   },
   "government": [
     {
