@@ -3645,11 +3645,11 @@
     "requested": [
       "dow"
     ],
-    "last_run": "2026-11-27T03:26:08+07:00",
-    "updated": [
-      "dow"
-    ],
-    "errors": {}
+    "last_run": "2026-11-27T03:46:06+07:00",
+    "updated": [],
+    "errors": {
+      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
+    }
   },
   "government": [
     {
