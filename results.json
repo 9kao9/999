@@ -3643,13 +3643,13 @@
     "provider": "scrapingant",
     "render_javascript": true,
     "requested": [
-      "dow"
+      "nikkei_morning"
     ],
-    "last_run": "2026-11-27T03:46:06+07:00",
-    "updated": [],
-    "errors": {
-      "dow": "MSN: ไม่พบหัวข้อ DOW (DJI)"
-    }
+    "last_run": "2026-11-27T09:36:08+07:00",
+    "updated": [
+      "nikkei_morning"
+    ],
+    "errors": {}
   },
   "government": [
     {
@@ -4440,6 +4440,14 @@
     }
   ],
   "nikkei_morning": [
+    {
+      "date": "2026-11-27",
+      "time": "09:36",
+      "status": "out",
+      "main": "20488",
+      "top3": "204",
+      "bottom2": "88"
+    },
     {
       "date": "2026-11-26",
       "time": "09:36",
